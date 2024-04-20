@@ -1,6 +1,7 @@
-from django.db.models import Q, F
+from django.db.models import Q
 
-from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, RateList
+from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, RateList, ForeignCurrencyWallet, \
+    ConversionRate
 
 
 def get_user_uuid(account_id):
@@ -19,12 +20,20 @@ def check_client_potential(user_id, amount):
     else:
         return False
 
+def check_user_wallet(user_id, currency):
+    if ForeignCurrencyWallet.objects.filter(currency=currency).exists():
+        return True
+    return False
 
 def get_account_info(account_uuid):
     account_id = get_user_id(account_uuid)
     account = Account.objects.get(id=account_id)
     return account
 
+def get_additional_wallets(account_uuid):
+    account_id = get_user_id(account_uuid)
+    wallets = ForeignCurrencyWallet.objects.filter(account_id=account_id)
+    return wallets
 
 def get_user_transfers(account_uuid):
     account_id = get_user_id(account_uuid)
@@ -34,7 +43,7 @@ def get_user_transfers(account_uuid):
 
 def get_current_credit(account_uuid):
     account_id = get_user_id(account_uuid)
-    credit = Credit.objects.get(account_id=account_id) #
+    credit = Credit.objects.filter(account_id=account_id) #
     return credit
 
 
@@ -45,10 +54,7 @@ def get_fresh_rates():
 def get_user_conversions(account_uuid):
     account_id = get_user_id(account_uuid)
     conversions = Conversion.objects.filter(account_id=account_id)
-
-
-
-
+    return conversions
 
 
 
@@ -77,10 +83,16 @@ def update_pay_credit_early(sender_uuid, money_for_repayment, credit_id): # read
 
 
 
+def create_new_wallet(account_uuid, currency):
+    account_id = get_user_id(account_uuid)
+    if check_user_wallet(account_id, currency):
+        return False
+    new_credit = ForeignCurrencyWallet.objects.create(account_id=account_id, currency=currency)
+    return new_credit
 
 def create_new_credit(sender_uuid, credit_type):
     sender_id = get_user_id(sender_uuid)
-    new_credit = Credit.objects.create(account_id=sender_id, credit_type=credit_type) #
+    new_credit = Credit.objects.create(account_id=sender_id, credit_type=credit_type)
     return new_credit
 
 
@@ -99,4 +111,40 @@ def create_new_transfer(sender_uuid, receiver_uuid, amount):
         return transfer
     else:
         return False
+
+
+def create_conversion(account_uuid, amount, starting_currency, final_currency, rate):
+    account_id = get_user_id(account_uuid)
+    amount = int(amount)
+    rate = int(rate)
+    if starting_currency != "USD":
+        if not check_user_wallet(account_id, starting_currency):
+            return True
+    if final_currency != "USD":
+        if not check_user_wallet(account_id, final_currency):
+            return False
+    if check_client_potential(user_id=account_id, amount=amount):
+        conversion = Conversion.objects.create(account_id=account_id, amount=amount,
+                                               starting_currency=starting_currency, final_currency=final_currency)
+        ConversionRate.objects.create(exchange_id=rate, conversion=conversion)
+        if starting_currency == "USD":
+            from_wallet = Account.objects.get(id=account_id)
+            to_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=final_currency)
+            from_wallet.balance -= amount
+            to_wallet.balance += amount
+            from_wallet.save(), to_wallet.save()
+        elif final_currency == "USD":
+            from_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=starting_currency)
+            to_wallet = Account.objects.get(id=account_id)
+            from_wallet.balance -= amount
+            to_wallet.balance += amount
+            from_wallet.save(), to_wallet.save()
+        else:
+            from_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=starting_currency)
+            to_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=final_currency)
+            from_wallet.balance -= amount
+            to_wallet.balance += amount
+            from_wallet.save(), to_wallet.save()
+        return conversion
+    return None
 

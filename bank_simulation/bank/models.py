@@ -83,6 +83,15 @@ def create_user_description(sender, instance, created, **kwargs):
         Account.objects.create(account_auth_info=instance)
 
 
+class ForeignCurrencyWallet(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    currency = models.CharField(choices=Currencies.choices, max_length=3, blank=False, null=False)
+    balance = models.DecimalField(default=0, max_digits=16, decimal_places=6, blank=False, null=False)
+
+    class Meta:
+        db_table = 'dt_FC_Wallet'
+
+
 class Credit(models.Model): # добавить списывание каждый день в зависимости от времени
     class LoanType(models.TextChoices):
         CONSUMER_LOAN = '1', 'consumer loan'
@@ -147,9 +156,16 @@ class Conversion(models.Model):
     final_currency = models.CharField(max_length=3, choices=Currencies.choices, blank=False, null=False)
     conversion_percentage = models.PositiveSmallIntegerField(blank=False, null=False, default=1)
 
+    def clean(self):
+        if self.starting_currency == self.final_currency:
+            raise ValidationError("Starting currency and final currency cannot be the same.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
     class Meta:
         db_table = 'dt_Conversion'
-        unique_together = ('starting_currency', 'final_currency',)
 
 
 class RateList(models.Model):
