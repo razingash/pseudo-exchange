@@ -1,18 +1,21 @@
 import uuid
 
+from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, RateList, ForeignCurrencyWallet
-
-
-class AuthenticationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AccountAuthInfo
-        fields = ('username', 'pin', 'uuid')
+from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, ForeignCurrencyWallet
+from bank.services import get_user_id, check_client_potential
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        return super().create(validated_data)
+
     class Meta:
         model = AccountAuthInfo
         fields = ('username', 'password', 'pin', 'uuid')
@@ -41,8 +44,24 @@ class TransferSerializer(serializers.Serializer):
     amount = serializers.FloatField(min_value=100)
     time_stamp = serializers.DateTimeField(read_only=True)
 
+    def create(self, validated_data):
+        sender_id = get_user_id(validated_data['sender']['account_auth_info']['username'])
+        receiver_id = get_user_id(validated_data['receiver']['account_auth_info']['username'])
+        amount = int(validated_data['amount'])
+        client_potential = check_client_potential(user_id=sender_id, amount=amount)
+        if client_potential:
+            transfer = Transfer.objects.create(sender_id=sender_id, receiver_id=receiver_id, amount=amount)
+            sender = Account.objects.get(id=sender_id)
+            receiver = Account.objects.get(id=receiver_id)
+            sender.balance -= amount
+            receiver.balance += amount
+            sender.save(), receiver.save()
+
+            return transfer
+        else:
+            return client_potential
+
     def validate(self, data):
-        print(data)
         sender = data['sender']
         receiver = data['receiver']
 
@@ -52,6 +71,8 @@ class TransferSerializer(serializers.Serializer):
             raise serializers.ValidationError("'sender' with uuid is required.")
         if not receiver:
             raise serializers.ValidationError("'receiver' with uuid is required.")
+        if sender == receiver:
+            raise serializers.ValidationError("ClownError: check both sender and receiver")
 
         return data
 
@@ -61,15 +82,21 @@ class CreditSerializer(serializers.Serializer): # добавить отдель�
     account = serializers.CharField(source='account.account_auth_info.username')
     credit_type = serializers.CharField(source='get_credit_type_display')
     credit_status = serializers.ReadOnlyField(source='get_credit_status_display')
-    amount = serializers.ReadOnlyField()
+    amount = serializers.IntegerField()
     daily_debiting = serializers.ReadOnlyField()
     daily_growth = serializers.ReadOnlyField()
     to_pay = serializers.ReadOnlyField()
 
-    #def validate_account(self, value):
-    #    if not Account.objects.filter(uuid=value).exists():
-    #        raise ValidationError("Receiver must be a valid Account UUID.")
-    #    return value
+    def create(self, validated_data):
+        sender_uuid = validated_data['account']['account_auth_info']['username']
+        credit_type = validated_data['get_credit_type_display']
+        try:
+            uuid.UUID(sender_uuid, version=4)
+        except ValueError:
+            raise ObjectDoesNotExist
+        sender_id = get_user_id(sender_uuid)
+        new_credit = Credit.objects.create(account_id=sender_id, credit_type=credit_type)
+        return new_credit
 
 
 class ConversionGetSerializer(serializers.ModelSerializer):

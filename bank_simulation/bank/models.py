@@ -5,10 +5,10 @@ from uuid import uuid4
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator, FileExtensionValidator
+from django.core.validators import MinValueValidator, FileExtensionValidator, MinLengthValidator, MaxLengthValidator
 from django.db import models
 from django.db.models import UniqueConstraint
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 import requests
 from django.urls import reverse
@@ -26,12 +26,6 @@ class Currencies(models.TextChoices):
     SEK = 'SEK', 'Swedish krona'
     USD = 'USD', 'U.S. dollar'
 
-
-def validate_code(value):
-    if not value.isdigit():
-        raise ValidationError('Pin code must contain only digits')  # mb ошибки взять из реста
-    if len(value) != 4:
-        raise ValidationError('Pin code must be 4 digits long')
 
 def validate_file_size(value):
     max_size = 1 * 512 * 512
@@ -51,7 +45,7 @@ def exchange_rates_upload(instance, filename):
 
 class AccountAuthInfo(AbstractUser):
     uuid = models.UUIDField(primary_key=False, default=uuid4, editable=False, unique=True)
-    pin = models.CharField(max_length=4, validators=[validate_code])
+    pin = models.CharField(max_length=4, validators=[MinLengthValidator(4), MaxLengthValidator(4)])
 
     def __str__(self):
         return self.username
@@ -101,6 +95,7 @@ class Credit(models.Model): # добавить списывание каждый
         OPENED = '1', 'opened'
         CLOSED = '9', 'closed'
 
+    uuid = models.UUIDField(primary_key=False, default=uuid4, editable=False, unique=True)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     credit_type = models.CharField(choices=LoanType.choices, max_length=1, blank=False, null=False)
     credit_status = models.CharField(choices=LoanStatus.choices, max_length=1, default=LoanStatus.OPENED, blank=False, null=False,)
@@ -222,14 +217,4 @@ class UserAssets(models.Model):
 
     class Meta:
         db_table = 'dt_UserAssets'
-
-
-
-
-
-
-
-
-
-
 

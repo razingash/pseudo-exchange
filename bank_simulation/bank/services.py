@@ -1,15 +1,15 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
 from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, RateList, ForeignCurrencyWallet, \
     ConversionRate
 
 
-def get_user_uuid(account_id):
-    user_uuid = str(AccountAuthInfo.objects.only('uuid').get(id=account_id).uuid) #mb str убрать
-    return user_uuid
-
 def get_user_id(account_uuid):
-    user_id = AccountAuthInfo.objects.only('id').get(uuid=account_uuid).pk
+    try:
+        user_id = AccountAuthInfo.objects.only('id').get(uuid=account_uuid).pk
+    except Account.DoesNotExist:
+        raise ObjectDoesNotExist
     return user_id
 
 
@@ -18,7 +18,7 @@ def check_client_potential(user_id, amount):
     if client_balance >= int(amount):
         return True
     else:
-        return False
+        raise ValueError
 
 def check_user_wallet(user_id, currency):
     if ForeignCurrencyWallet.objects.filter(currency=currency).exists():
@@ -31,7 +31,7 @@ def get_account_info(account_uuid):
     return account
 
 def get_additional_wallets(account_uuid):
-    account_id = get_user_id(account_uuid)
+    account_id = get_user_id(account_uuid=account_uuid)
     wallets = ForeignCurrencyWallet.objects.filter(account_id=account_id)
     return wallets
 
@@ -57,10 +57,10 @@ def get_user_conversions(account_uuid):
     return conversions
 
 
-
 def update_pay_credit_early(sender_uuid, money_for_repayment, credit_id): # ready
     sender_id = get_user_id(sender_uuid)
-    if check_client_potential(user_id=sender_id, amount=money_for_repayment):
+    client_potential = check_client_potential(user_id=sender_id, amount=money_for_repayment)
+    if client_potential:
         credit = Credit.objects.get(account_id=sender_id, id=credit_id)
         account = Account.objects.get(id=sender_id)
         money_for_repayment = int(money_for_repayment)
@@ -78,39 +78,15 @@ def update_pay_credit_early(sender_uuid, money_for_repayment, credit_id): # read
                 account.save(), credit.save()
             return credit
     else:
-        return False
-
-
+        return client_potential
 
 
 def create_new_wallet(account_uuid, currency):
     account_id = get_user_id(account_uuid)
     if check_user_wallet(account_id, currency):
         return False
-    new_credit = ForeignCurrencyWallet.objects.create(account_id=account_id, currency=currency)
-    return new_credit
-
-def create_new_credit(sender_uuid, credit_type):
-    sender_id = get_user_id(sender_uuid)
-    new_credit = Credit.objects.create(account_id=sender_id, credit_type=credit_type)
-    return new_credit
-
-
-def create_new_transfer(sender_uuid, receiver_uuid, amount):
-    sender_id = get_user_id(sender_uuid)
-    receiver_id = get_user_id(receiver_uuid)
-    amount = int(amount)
-    if check_client_potential(user_id=sender_id, amount=amount):
-        transfer = Transfer.objects.create(sender_id=sender_id, receiver_id=receiver_id, amount=amount)
-        sender = Account.objects.get(id=sender_id)
-        receiver = Account.objects.get(id=receiver_id)
-        sender.balance -= amount
-        receiver.balance += amount
-        sender.save(), receiver.save()
-
-        return transfer
-    else:
-        return False
+    new_wallet = ForeignCurrencyWallet.objects.create(account_id=account_id, currency=currency)
+    return new_wallet
 
 
 def create_conversion(account_uuid, amount, starting_currency, final_currency, rate):
@@ -123,7 +99,8 @@ def create_conversion(account_uuid, amount, starting_currency, final_currency, r
     if final_currency != "USD":
         if not check_user_wallet(account_id, final_currency):
             return False
-    if check_client_potential(user_id=account_id, amount=amount):
+    client_potential = check_client_potential(user_id=account_id, amount=amount)
+    if client_potential:
         conversion = Conversion.objects.create(account_id=account_id, amount=amount,
                                                starting_currency=starting_currency, final_currency=final_currency)
         ConversionRate.objects.create(exchange_id=rate, conversion=conversion)
@@ -146,5 +123,5 @@ def create_conversion(account_uuid, amount, starting_currency, final_currency, r
             to_wallet.balance += amount
             from_wallet.save(), to_wallet.save()
         return conversion
-    return None
+    return client_potential
 

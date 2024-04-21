@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'bank.apps.BankConfig',
+    'djoser',
     'debug_toolbar'
 ]
 
@@ -133,4 +135,18 @@ INTERNAL_IPS = [
     '127.0.0.1'
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny'
+    ],
+    
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
+DJOSER = {
+    'SERIALIZERS': {
+        'user_create': 'bank.serializers.RegistrationSerializer',
+    },
+}
