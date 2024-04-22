@@ -1,9 +1,10 @@
 import uuid
 
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, ForeignCurrencyWallet
 from bank.services import get_user_id, check_client_potential
@@ -11,6 +12,10 @@ from bank.services import get_user_id, check_client_potential
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+
+    def validate_password(self, value):
+        validate_password(value, self.instance)
+        return value
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
@@ -80,12 +85,21 @@ class TransferSerializer(serializers.Serializer):
 class CreditSerializer(serializers.Serializer): # добавить отдельный uuid для кредита
     id = serializers.IntegerField(read_only=True)
     account = serializers.CharField(source='account.account_auth_info.username')
-    credit_type = serializers.CharField(source='get_credit_type_display')
+    credit_type = serializers.CharField(source='get_credit_type_display', read_only=False, max_length=1)
     credit_status = serializers.ReadOnlyField(source='get_credit_status_display')
-    amount = serializers.IntegerField()
+    amount = serializers.IntegerField(read_only=False)
     daily_debiting = serializers.ReadOnlyField()
     daily_growth = serializers.ReadOnlyField()
     to_pay = serializers.ReadOnlyField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'context' in kwargs:
+            if 'method' in kwargs['context']:
+                if kwargs['context']['method'] == 'POST':
+                    self.fields['amount'].read_only = True
+                if kwargs['context']['method'] == 'PATCH':
+                    self.fields['credit_type'].read_only = True
 
     def create(self, validated_data):
         sender_uuid = validated_data['account']['account_auth_info']['username']
@@ -95,7 +109,10 @@ class CreditSerializer(serializers.Serializer): # добавить отдель�
         except ValueError:
             raise ObjectDoesNotExist
         sender_id = get_user_id(sender_uuid)
-        new_credit = Credit.objects.create(account_id=sender_id, credit_type=credit_type)
+        try:
+            new_credit = Credit.objects.create(account_id=sender_id, credit_type=credit_type)
+        except IntegrityError:
+            raise IndexError
         return new_credit
 
 

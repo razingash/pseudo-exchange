@@ -196,13 +196,13 @@ class InvestmentTransaction(models.Model):
 
 
 class Assets(models.Model):
-    class AssetsType(models.TextChoices):
+    class AssetType(models.TextChoices):
         PM = 'PM', 'precious metal'
         SS = 'SS', 'securities'
     ticker = models.CharField(max_length=4, blank=False, null=False)
     name = models.CharField(max_length=50, blank=False, null=False)
     cost = models.PositiveSmallIntegerField(blank=False, null=False)
-    type = models.CharField(max_length=2, choices=AssetsType.choices, blank=False, null=False)
+    type = models.CharField(max_length=2, choices=AssetType.choices, blank=False, null=False)
     measurement_date = models.DateTimeField(auto_now=True, blank=False, null=False)
     data = models.FilePathField(blank=True, null=True, path=settings.MEDIA_URL)
 
@@ -210,11 +210,19 @@ class Assets(models.Model):
         db_table = 'dt_Assets'
 
 
-class UserAssets(models.Model):
+class UserTransaction(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
     securities = models.ForeignKey(Assets, on_delete=models.CASCADE)
     transaction = models.ForeignKey(InvestmentTransaction, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'dt_UserAssets'
+        db_table = 'dt_UserTransaction'
 
+
+class AccountAsset(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    asset = models.ForeignKey(Assets, on_delete=models.DO_NOTHING)
+    amount = models.PositiveSmallIntegerField(blank=False, null=False)
+
+    class Meta:
+        db_table = 'dt_AccountAsset'

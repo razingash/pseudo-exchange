@@ -61,7 +61,10 @@ def update_pay_credit_early(sender_uuid, money_for_repayment, credit_id): # read
     sender_id = get_user_id(sender_uuid)
     client_potential = check_client_potential(user_id=sender_id, amount=money_for_repayment)
     if client_potential:
-        credit = Credit.objects.get(account_id=sender_id, id=credit_id)
+        try:
+            credit = Credit.objects.get(account_id=sender_id, id=credit_id)
+        except ObjectDoesNotExist:
+            raise IndexError
         account = Account.objects.get(id=sender_id)
         money_for_repayment = int(money_for_repayment)
         if account.balance >= money_for_repayment:
@@ -89,10 +92,10 @@ def create_new_wallet(account_uuid, currency):
     return new_wallet
 
 
-def create_conversion(account_uuid, amount, starting_currency, final_currency, rate):
+def create_conversion(account_uuid, amount, starting_currency, final_currency):
     account_id = get_user_id(account_uuid)
     amount = int(amount)
-    rate = int(rate)
+    rate = RateList.objects.only('id').latest('measurement_date').id
     if starting_currency != "USD":
         if not check_user_wallet(account_id, starting_currency):
             return True
