@@ -1,8 +1,33 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
-
+from rest_framework.response import Response
 from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, RateList, ForeignCurrencyWallet, \
     ConversionRate
+
+def object_does_not_exist(func: callable):
+    def wrapper(request, *args, **kwargs):
+        try:
+            return func(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            return Response({"error": "Account not found"}, status=404)
+    return wrapper
+
+def value_error_not_enough_money(func: callable):
+    def wrapper(request, *args, **kwargs):
+        try:
+            return func(request, *args, **kwargs)
+        except ValueError:
+            return Response({"error": "you don't have enough money"}, status=404)
+    return wrapper
+
+def index_error_credit_was_not_found(func: callable): # IndexError in reality is ObjectDoesNotExist if you check the code
+    def wrapper(request, *args, **kwargs):
+        try:
+            return func(request, *args, **kwargs)
+        except IndexError:
+            return Response({"error": "credit wasn't found"}, status=404)
+    return wrapper
+
 
 
 def get_user_id(account_uuid):

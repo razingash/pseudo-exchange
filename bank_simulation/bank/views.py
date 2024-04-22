@@ -1,5 +1,4 @@
 from json import load
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,32 +8,30 @@ from bank.permissions import IsUuidProvided
 from bank.serializers import AccountSerializer, TransferSerializer, CreditSerializer, ConversionSerializer,\
     ConversionGetSerializer, ForeignCurrencyWalletSerializer, ForeignCurrencyWalletsSerializer
 from bank.services import get_user_transfers, get_current_credit, update_pay_credit_early, get_fresh_rates, \
-    get_user_conversions, create_conversion, get_additional_wallets, create_new_wallet, get_account_info
+    get_user_conversions, create_conversion, get_additional_wallets, create_new_wallet, get_account_info, \
+    object_does_not_exist, value_error_not_enough_money, index_error_credit_was_not_found
 
 
 class AccountApiView(APIView): # account
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
+    @object_does_not_exist
     def get(self, request):  # get current account info
         account_uuid = request.data.get('uuid')
-        try:
-            account = get_account_info(account_uuid)
-        except ObjectDoesNotExist:
-            return Response({"error": "Account not found"}, status=404)
+        account = get_account_info(account_uuid)
         return Response({'accounts': AccountSerializer(account, many=False).data})
 
 
 class ForeignCurrencyWalletApi(APIView): #
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
+    @object_does_not_exist
     def get(self, request): # get another wallets
         account_uuid = request.data.get('uuid')
-        try:
-            account = get_additional_wallets(account_uuid)
-        except ObjectDoesNotExist:
-            return Response({"error": "Account not found"}, status=404)
+        account = get_additional_wallets(account_uuid)
         return Response({'accounts': ForeignCurrencyWalletsSerializer(account, many=True).data})
 
+    @object_does_not_exist
     def post(self, request): # create another wallet
         account_uuid = request.data.get('uuid')
         data = request.data.get('core')
@@ -43,10 +40,8 @@ class ForeignCurrencyWalletApi(APIView): #
         data = data[0]
         serializer = ForeignCurrencyWalletSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        try:
-            fc_wallet = create_new_wallet(account_uuid=account_uuid, currency=data['currency'])
-        except ObjectDoesNotExist:
-            return Response({"error": "Account not found"}, status=404)
+        fc_wallet = create_new_wallet(account_uuid=account_uuid, currency=data['currency'])
+
         if fc_wallet is False:
             return Response({"error": f"you already have a wallet with {data['currency']} currency"}, status=400)
         return Response({'transfer': ForeignCurrencyWalletSerializer(fc_wallet, many=False).data})
@@ -65,14 +60,14 @@ class CurrentRatesApi(APIView):
 class TransferApi(APIView): # ready
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
+    @object_does_not_exist
     def get(self, request): # user transfers
         account_uuid = request.data.get('uuid')
-        try:
-            transfers = get_user_transfers(account_uuid)
-        except ObjectDoesNotExist:
-            return Response({"error": "Account not found"}, status=404)
+        transfers = get_user_transfers(account_uuid)
         return Response({'transfers': TransferSerializer(transfers, many=True).data})
 
+    @value_error_not_enough_money
+    @object_does_not_exist
     def post(self, request):
         data = request.data.get('core')
         if not data:
@@ -80,14 +75,10 @@ class TransferApi(APIView): # ready
         data = data[0]
         if data['sender'] != request.data.get('uuid'):
             return Response({"error": "sender uuid isn't equal to receiver"}, status=400)
-        try:
-            serializer = TransferSerializer(data=data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-        except ObjectDoesNotExist:
-            return Response({"error": "Account not found"}, status=404)
-        except ValueError:
-            return Response({"error": "you need more money"}, status=404)
+
+        serializer = TransferSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
         return Response({'transfer': serializer.data})
 
@@ -95,30 +86,30 @@ class TransferApi(APIView): # ready
 class CreditApi(APIView):
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
+    @object_does_not_exist
     def get(self, request): # get current credit
         account_uuid = request.data.get('uuid')
-        try:
-            credit = get_current_credit(account_uuid)
-        except ObjectDoesNotExist:
-            return Response({"error": "Account not found"}, status=404)
+        credit = get_current_credit(account_uuid)
         return Response({'credits': CreditSerializer(credit, many=True).data})
 
+    @index_error_credit_was_not_found
+    @object_does_not_exist
     def post(self, request): # take new credit
         data = request.data.get('core')
         if not data:
             return Response({"error": "'core' is required"}, status=400)
         if data[0]['account'] != request.data.get('uuid'):
             return Response({"error": "sender uuid isn't equal to receiver"}, status=400)
-        try:
-            serializer = CreditSerializer(data=data[0], context={'method': 'POST'})
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-        except ObjectDoesNotExist:
-            return Response({"error": "Account not found"}, status=404)
-        except IndexError:
-            return Response({"error": "credit type wasn't founded"}, status=404)
+
+        serializer = CreditSerializer(data=data[0], context={'method': 'POST'})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
         return Response({'post': serializer.data})
 
+    @index_error_credit_was_not_found
+    @value_error_not_enough_money
+    @object_does_not_exist
     def patch(self, request): # pay for the credit early
         account_uuid = request.data.get('uuid')
         data = request.data.get('core')[0]
@@ -131,29 +122,23 @@ class CreditApi(APIView):
         money_for_repayment = data['amount']
         credit_id = data['credit_id']
 
-        try:
-            credit = update_pay_credit_early(sender_uuid=account_uuid, money_for_repayment=money_for_repayment,
-                                             credit_id=credit_id)
-        except ObjectDoesNotExist:
-            return Response({"error": "Account not found"}, status=404)
-        except ValueError:
-            return Response({"error": "you need more money"}, status=404)
-        except IndexError:
-            return Response({"error": "credit wasn't founded"}, status=404)
+        credit = update_pay_credit_early(sender_uuid=account_uuid, money_for_repayment=money_for_repayment,
+                                         credit_id=credit_id)
+
         return Response({'patch': CreditSerializer(credit, many=False).data})
 
 
 class ConversionApi(APIView):
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
+    @object_does_not_exist
     def get(self, request): # get conversions
         account_uuid = request.data.get('uuid')
-        try:
-            conversion = get_user_conversions(account_uuid)
-        except ObjectDoesNotExist:
-            return Response({"error": "Account not found"}, status=404)
+        conversion = get_user_conversions(account_uuid)
         return Response({'conversions': ConversionGetSerializer(conversion, many=True).data})
 
+    @value_error_not_enough_money
+    @object_does_not_exist
     def post(self, request): # convert currency
         account_uuid = request.data.get('uuid')
         data = request.data.get('core')
@@ -168,13 +153,8 @@ class ConversionApi(APIView):
         starting_currency = data['starting_currency']
         final_currency = data['final_currency']
 
-        try:
-            conversion = create_conversion(account_uuid=account_uuid, amount=amount, starting_currency=starting_currency,
-                                           final_currency=final_currency)
-        except ObjectDoesNotExist:
-            return Response({"error": "Account not found"}, status=404)
-        except ValueError:
-            return Response({"error": "you don't have enough money"}, status=400)
+        conversion = create_conversion(account_uuid=account_uuid, amount=amount, starting_currency=starting_currency,
+                                       final_currency=final_currency)
 
         if conversion is True:
             return Response({"error": f"you don't have a wallet with s {starting_currency} currency"}, status=400)
