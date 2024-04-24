@@ -6,7 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from rest_framework import serializers
 
-from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, ForeignCurrencyWallet
+from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, ForeignCurrencyWallet, \
+    AccountAsset, Assets, Currencies, TransactionTypes
 from bank.services import get_user_id, check_client_potential
 
 
@@ -25,6 +26,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = AccountAuthInfo
         fields = ('username', 'password', 'pin', 'uuid')
 
+
+class GetUuidSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AccountAuthInfo
+        fields = ('uuid', )
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -130,3 +136,49 @@ class ConversionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Conversion
         fields = ('amount', 'starting_currency', 'final_currency')
+
+
+class AccountTransactionsSerializer(serializers.Serializer):
+    account = serializers.CharField(source='account.account_auth_info.username', read_only=True)
+    transaction_type = serializers.CharField(source='get_transaction_type_display', max_length=1)
+    currency_type = serializers.CharField(source='get_currency_type_display')
+    time_stamp = serializers.DateTimeField(read_only=True)
+    amount = serializers.IntegerField(read_only=False)
+
+    def validate_transaction_type(self, value):
+        allowed_choices = [choice.value for choice in TransactionTypes]
+
+        if value not in allowed_choices:
+            raise serializers.ValidationError(f"invalid transaction type: {value}")
+
+        return value
+
+    def validate_currency_type(self, value):
+        allowed_choices = [choice.value for choice in Currencies]
+
+        if value not in allowed_choices:
+            raise serializers.ValidationError(f"invalid currency type: {value}")
+
+        return value
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'context' in kwargs:
+            if 'method' in kwargs['context']:
+                if kwargs['context']['method'] == 'GET':
+                    self.fields['amount'].read_only = True
+
+
+class AccountAssetsSerializer(serializers.ModelSerializer):
+    account = serializers.CharField(source='account.account_auth_info.username')
+    asset = serializers.CharField(source='asset.ticker')
+
+    class Meta:
+        model = AccountAsset
+        fields = ("account", 'asset', 'amount')
+
+
+class AssetsListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Assets
+        fields = ('ticker', 'name', 'cost', 'currency_type', 'dividends', 'measurement_date')

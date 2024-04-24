@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime
 from uuid import uuid4
@@ -13,6 +14,10 @@ from django.dispatch import receiver
 import requests
 from django.urls import reverse
 
+
+class TransactionTypes(models.TextChoices):
+    PURCHASE = 'P', 'purchase'
+    SALE = 'S', 'sale'
 
 class Currencies(models.TextChoices):
     BYN = 'BYN', 'Belarusian ruble'
@@ -64,7 +69,7 @@ class Account(models.Model):
         BANNED = '9', 'Banned'
 
     account_auth_info = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    balance = models.DecimalField(default=150000, max_digits=16, decimal_places=6, blank=False, null=False)
+    balance = models.DecimalField(default=150000, max_digits=16, decimal_places=2, blank=False, null=False)
     status = models.CharField(max_length=1, choices=UserStatusChoices.choices,
                               default=UserStatusChoices.FREE, verbose_name='account status')
 
@@ -80,7 +85,7 @@ def create_user_description(sender, instance, created, **kwargs):
 class ForeignCurrencyWallet(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     currency = models.CharField(choices=Currencies.choices, max_length=3, blank=False, null=False)
-    balance = models.DecimalField(default=0, max_digits=16, decimal_places=6, blank=False, null=False)
+    balance = models.DecimalField(default=0, max_digits=16, decimal_places=2, blank=False, null=False)
 
     class Meta:
         db_table = 'dt_FC_Wallet'
@@ -145,7 +150,7 @@ class Transfer(models.Model):
 
 class Conversion(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    amount = models.PositiveSmallIntegerField(blank=False, null=False, validators=[MinValueValidator(10)])
+    amount = models.DecimalField(max_digits=16, decimal_places=2, blank=False, null=False, validators=[MinValueValidator(10)])
     time_stamp = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     starting_currency = models.CharField(max_length=3, choices=Currencies.choices, blank=False, null=False)
     final_currency = models.CharField(max_length=3, choices=Currencies.choices, blank=False, null=False)
@@ -181,33 +186,64 @@ class ConversionRate(models.Model):
 
 
 class InvestmentTransaction(models.Model):
-    class TransactionTypes(models.TextChoices):
-        PURCHASE = 'P', 'purchase'
-        SALE = 'S', 'sale'
-
+    account = models.ForeignKey(Account, on_delete=models.DO_NOTHING)
     transaction_type = models.CharField(max_length=1, choices=TransactionTypes.choices, blank=False, null=False)
     time_stamp = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     amount = models.PositiveSmallIntegerField(blank=False, null=False, validators=[MinValueValidator(1)])
-    purchase_currency = models.CharField(max_length=3, choices=Currencies.choices, blank=False, null=False)
+    currency_type = models.CharField(max_length=3, choices=Currencies.choices, blank=False, null=False)
 
     class Meta:
         db_table = 'dt_InvestmentTransaction'
 
 
-
 class Assets(models.Model):
-    class AssetType(models.TextChoices):
-        PM = 'PM', 'precious metal'
-        SS = 'SS', 'securities'
-    ticker = models.CharField(max_length=4, blank=False, null=False)
+    ticker = models.CharField(max_length=6, blank=False, null=False)
     name = models.CharField(max_length=50, blank=False, null=False)
-    cost = models.PositiveSmallIntegerField(blank=False, null=False)
-    type = models.CharField(max_length=2, choices=AssetType.choices, blank=False, null=False)
+    cost = models.PositiveSmallIntegerField(default=100, blank=False, null=False)
+    currency_type = models.CharField(choices=Currencies.choices, default=Currencies.USD, max_length=3,
+                                     blank=False, null=False)
+    dividends = models.PositiveSmallIntegerField(default=2, blank=False, null=False)
     measurement_date = models.DateTimeField(auto_now=True, blank=False, null=False)
-    data = models.FilePathField(blank=True, null=True, path=settings.MEDIA_URL)
+    data = models.FilePathField(blank=True, null=True, path=os.path.join(settings.MEDIA_ROOT, 'assets'),
+                                allow_files=True, match='.*\.json$')
 
     class Meta:
         db_table = 'dt_Assets'
+
+@receiver(post_save, sender=Assets)
+def create_json_template(sender, instance, created, **kwargs):
+    json_path = os.path.join(
+        settings.MEDIA_ROOT, 'assets', f"{instance.ticker}.json"
+    )
+    if created:
+        json_schema = {
+            "ticker": instance.ticker,
+            "name": instance.name,
+            "currency_type": instance.currency_type,
+            "dividends": instance.dividends,
+            "contents": []
+        }
+
+        with open(json_path, 'w') as json_file:
+            json.dump(json_schema, json_file, indent=4)
+
+        instance.data = json_path
+        instance.save()
+    else:
+        with open(json_path, 'r') as json_file:
+            json_data = json.load(json_file)
+
+        json_data["contents"].append({
+            "measurement_date": str(instance.measurement_date),
+            "cost": instance.cost
+        })
+
+        with open(json_path, 'w') as json_file:
+            json.dump(json_data, json_file, indent=4)
+
+        if not instance.data:
+            instance.data = json_path
+            instance.save()
 
 
 class UserTransaction(models.Model):
