@@ -7,36 +7,23 @@ from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, 
     ConversionRate, InvestmentTransaction, AccountAsset, Assets, UserTransaction
 from rest_framework.authtoken.models import Token
 
-def object_does_not_exist(func: callable):
+class CustomException(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+def custom_exception(func: callable):
     def wrapper(request, *args, **kwargs):
         try:
             return func(request, *args, **kwargs)
-        except ObjectDoesNotExist:
-            return Response({"error": "Account not found"}, status=404)
+        except CustomException as e:
+            return Response({"error": f"{e}"}, status=400)
     return wrapper
-
-def value_error_not_enough_money(func: callable):
-    def wrapper(request, *args, **kwargs):
-        try:
-            return func(request, *args, **kwargs)
-        except ValueError:
-            return Response({"error": "you don't have enough money"}, status=404)
-    return wrapper
-
-def index_error_credit_was_not_found(func: callable): # IndexError in reality is ObjectDoesNotExist if you check the code
-    def wrapper(request, *args, **kwargs):
-        try:
-            return func(request, *args, **kwargs)
-        except IndexError:
-            return Response({"error": "credit wasn't found"}, status=404)
-    return wrapper
-
 
 def get_user_id(account_uuid):
     try:
         user_id = AccountAuthInfo.objects.only('id').get(uuid=account_uuid).pk
-    except Account.DoesNotExist:
-        raise ObjectDoesNotExist
+    except ObjectDoesNotExist:
+        raise CustomException("Account not found")
     return user_id
 
 def check_client_potential(user_id, amount):
@@ -44,7 +31,7 @@ def check_client_potential(user_id, amount):
     if client_balance >= int(amount):
         return True
     else:
-        raise ValueError
+        raise CustomException("you don't have enough money")
 
 def check_client_potential_assets(user_id, amount, currency_type, asset_id):
     asset = Assets.objects.get(id=asset_id)
@@ -54,16 +41,16 @@ def check_client_potential_assets(user_id, amount, currency_type, asset_id):
         if client_balance >= cost:
             return cost
         else:
-            raise ValueError
+            raise CustomException("you don't have enough money")
     else:
         if ForeignCurrencyWallet.objects.filter(account_id=user_id, currency=currency_type).exists():
             client_balance = int(ForeignCurrencyWallet.objects.get(account_id=user_id, currency=currency_type))
             if client_balance >= cost:
                 return cost
             else:
-                raise ValueError
+                raise CustomException("you don't have enough money")
         else:
-            raise KeyError
+            raise CustomException(f"you need a wallet with '{currency_type}' to make this deal")
 
 def check_user_wallet(user_id, currency):
     if ForeignCurrencyWallet.objects.filter(currency=currency, account_id=user_id).exists():
@@ -80,7 +67,7 @@ def get_user_uuid(key):
         user_id = Token.objects.only('user_id').get(key=key).user_id
         user_uuid = AccountAuthInfo.objects.only('uuid').get(id=user_id)
     except Token.DoesNotExist:
-        raise ObjectDoesNotExist
+        raise CustomException("Account not found")
     return user_uuid
 
 def get_additional_wallets(account_uuid):
@@ -128,7 +115,7 @@ def get_asset_story(asset_id):
     try:
         asset_path = Assets.objects.get(id=asset_id).data
     except ObjectDoesNotExist:
-        return False
+        raise CustomException("asset not found")
     else:
         with open(asset_path, 'r') as json_file:
             json_data = json.load(json_file)
@@ -141,7 +128,7 @@ def update_pay_credit_early(sender_uuid, money_for_repayment, credit_id): # read
         try:
             credit = Credit.objects.get(account_id=sender_id, id=credit_id)
         except ObjectDoesNotExist:
-            raise IndexError
+            raise CustomException("credit wasn't found")
         account = Account.objects.get(account_auth_info_id=sender_id)
         money_for_repayment = int(money_for_repayment)
         if account.balance >= money_for_repayment:
@@ -162,6 +149,8 @@ def update_pay_credit_early(sender_uuid, money_for_repayment, credit_id): # read
 
 
 def create_new_wallet(account_uuid, currency):
+    if currency == 'USD':
+        raise CustomException("you already have a wallet with this currency by default")
     account_id = get_user_id(account_uuid)
     if check_user_wallet(account_id, currency):
         return False
@@ -208,11 +197,14 @@ def create_conversion(account_uuid, amount, starting_currency, final_currency):
 def create_new_transaction(account_uuid, amount, transaction_type, currency_type, asset_id):
     account_id = get_user_id(account_uuid)
     amount = int(amount)
-    if not Assets.objects.filter(id=asset_id).exists():
-        return False
+    asset = Assets.objects.filter(id=asset_id)
+    if not asset.exists():
+        raise CustomException(f"there is no such assets like {asset_id}")
+    if asset[0].currency_type != currency_type:
+        raise CustomException(f"asset with id {asset_id} is sold in {asset[0].currency_type} currency, not in {currency_type}")
     if currency_type != "USD":
         if not check_user_wallet(account_id, currency_type):
-            return True
+            raise CustomException(f"you need a wallet with '{currency_type}' to make this deal")
     if transaction_type == "P": # purchase
         client_potential = check_client_potential_assets(user_id=account_id, amount=amount, currency_type=currency_type,
                                                          asset_id=asset_id)
@@ -260,4 +252,4 @@ def create_new_transaction(account_uuid, amount, transaction_type, currency_type
                 user_assets.amount -= amount
                 user_assets.save()
                 return transaction
-            raise ArithmeticError
+            raise CustomException("you need more assets to make this deal")

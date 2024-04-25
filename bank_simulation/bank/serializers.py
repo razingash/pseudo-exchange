@@ -8,7 +8,7 @@ from rest_framework import serializers
 
 from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, ForeignCurrencyWallet, \
     AccountAsset, Assets, Currencies, TransactionTypes
-from bank.services import get_user_id, check_client_potential
+from bank.services import get_user_id, check_client_potential, CustomException
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -113,12 +113,12 @@ class CreditSerializer(serializers.Serializer): # добавить отдель�
         try:
             uuid.UUID(sender_uuid, version=4)
         except ValueError:
-            raise ObjectDoesNotExist
+            raise serializers.ValidationError("invalid uuid")
         sender_id = get_user_id(sender_uuid)
         try:
             new_credit = Credit.objects.create(account_id=sender_id, credit_type=credit_type)
         except IntegrityError:
-            raise IndexError
+            raise serializers.ValidationError(f"there is no such credit type like {credit_type}")
         return new_credit
 
 

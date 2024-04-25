@@ -13,14 +13,14 @@ from bank.serializers import AccountSerializer, TransferSerializer, CreditSerial
     AccountTransactionsSerializer, AccountAssetsSerializer, AssetsListSerializer
 from bank.services import get_user_transfers, get_current_credit, update_pay_credit_early, get_fresh_rates, \
     get_user_conversions, create_conversion, get_additional_wallets, create_new_wallet, get_account_info, \
-    object_does_not_exist, value_error_not_enough_money, index_error_credit_was_not_found, get_user_uuid, \
-    get_user_transaction, get_user_assets, create_new_transaction, get_assets, get_asset_story
+    get_user_uuid, get_user_transaction, get_user_assets, create_new_transaction, get_assets, get_asset_story, \
+    custom_exception
 
 
 class AccountApiView(APIView): # account
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
-    @object_does_not_exist
+    @custom_exception
     def get(self, request):  # get current account info
         account_uuid = request.data.get('uuid')
         account = get_account_info(account_uuid)
@@ -30,7 +30,7 @@ class AccountApiView(APIView): # account
 class GetUserUuidApi(APIView):
     permission_classes = (IsAuthenticated, )
 
-    @object_does_not_exist
+    @custom_exception
     def get(self, request):  # get current account uuid
         key = get_authorization_header(request).decode('utf-8').split()[1]
         uuid = get_user_uuid(key)
@@ -40,13 +40,13 @@ class GetUserUuidApi(APIView):
 class ForeignCurrencyWalletApi(APIView): #
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
-    @object_does_not_exist
+    @custom_exception
     def get(self, request): # get another wallets
         account_uuid = request.data.get('uuid')
         account = get_additional_wallets(account_uuid)
         return Response({'accounts': ForeignCurrencyWalletsSerializer(account, many=True).data})
 
-    @object_does_not_exist
+    @custom_exception
     def post(self, request): # create another wallet
         account_uuid = request.data.get('uuid')
         data = request.data.get('core')
@@ -75,14 +75,13 @@ class CurrentRatesApi(APIView):
 class TransferApi(APIView): # ready
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
-    @object_does_not_exist
+    @custom_exception
     def get(self, request): # user transfers
         account_uuid = request.data.get('uuid')
         transfers = get_user_transfers(account_uuid)
         return Response({'transfers': TransferSerializer(transfers, many=True).data})
 
-    @value_error_not_enough_money
-    @object_does_not_exist
+    @custom_exception
     def post(self, request):
         data = request.data.get('core')
         if not data:
@@ -101,14 +100,13 @@ class TransferApi(APIView): # ready
 class CreditApi(APIView):
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
-    @object_does_not_exist
+    @custom_exception
     def get(self, request): # get current credit
         account_uuid = request.data.get('uuid')
         credit = get_current_credit(account_uuid)
         return Response({'credits': CreditSerializer(credit, many=True).data})
 
-    @index_error_credit_was_not_found
-    @object_does_not_exist
+    @custom_exception
     def post(self, request): # take new credit
         data = request.data.get('core')
         if not data:
@@ -122,9 +120,7 @@ class CreditApi(APIView):
 
         return Response({'post': serializer.data})
 
-    @index_error_credit_was_not_found
-    @value_error_not_enough_money
-    @object_does_not_exist
+    @custom_exception
     def patch(self, request): # pay for the credit early
         account_uuid = request.data.get('uuid')
         data = request.data.get('core')[0]
@@ -146,14 +142,13 @@ class CreditApi(APIView):
 class ConversionApi(APIView):
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
-    @object_does_not_exist
+    @custom_exception
     def get(self, request): # get conversions
         account_uuid = request.data.get('uuid')
         conversion = get_user_conversions(account_uuid)
         return Response({'conversions': ConversionGetSerializer(conversion, many=True).data})
 
-    @value_error_not_enough_money
-    @object_does_not_exist
+    @custom_exception
     def post(self, request): # convert currency
         account_uuid = request.data.get('uuid')
         data = request.data.get('core')
@@ -182,9 +177,8 @@ class ConversionApi(APIView):
 class AssetsListApiView(APIView): # ready
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
-    @object_does_not_exist
+    @custom_exception
     def get(self, request):
-        account_uuid = request.data.get('uuid')
         user_assets = get_assets()
         return Response({'assets': AssetsListSerializer(user_assets, many=True).data})
 
@@ -192,14 +186,13 @@ class AssetsListApiView(APIView): # ready
 class TransactionsApi(APIView):
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
-    @object_does_not_exist
+    @custom_exception
     def get(self, request):
         account_uuid = request.data.get('uuid')
         transactions = get_user_transaction(account_uuid)
         return Response({'conversions': AccountTransactionsSerializer(transactions, many=True).data})
 
-    @value_error_not_enough_money
-    @object_does_not_exist
+    @custom_exception
     def post(self, request): # buy assets
         account_uuid = request.data.get('uuid')
         data = request.data.get('core')
@@ -217,24 +210,16 @@ class TransactionsApi(APIView):
         transaction_type = data['transaction_type']
         currency_type = data['currency_type']
 
-        try:
-            transaction = create_new_transaction(account_uuid=account_uuid, amount=amount, currency_type=currency_type,
-                                                 transaction_type=transaction_type, asset_id=asset_id)
-        except KeyError: #улучшить конвертирование и сделать автоконверт вместо этого
-            return Response({"error": f"you need a wallet with '{currency_type}' to make this deal"}, status=400)
-        except ArithmeticError:
-            return Response({"error": f"you need more assets to make this deal"}, status=400)
-        if transaction is True:
-            return Response({"error": f"you need a wallet with '{currency_type}' to make this deal"}, status=400)
-        if transaction is False:
-            return Response({"error": f"there is no such assets"}, status=400)
+
+        transaction = create_new_transaction(account_uuid=account_uuid, amount=amount, currency_type=currency_type,
+                                             transaction_type=transaction_type, asset_id=asset_id)
         return Response({'transaction': AccountTransactionsSerializer(transaction, many=False).data})
 
 
 class AccountAssetsApi(APIView):
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
-    @object_does_not_exist
+    @custom_exception
     def get(self, request):
         account_uuid = request.data.get('uuid')
         user_assets = get_user_assets(account_uuid)
@@ -243,7 +228,7 @@ class AccountAssetsApi(APIView):
 class AssetStoryApi(APIView):
     permission_classes = (IsAuthenticated, IsUuidProvided)
 
-    @object_does_not_exist
+    @custom_exception
     def get(self, request):
         data = request.data.get('core')
         if not data:
@@ -254,7 +239,4 @@ class AssetStoryApi(APIView):
             return Response({"error": "'asset_id' is requiered"}, status=400)
 
         asset_story = get_asset_story(asset_id)
-
-        if asset_story is False:
-            return Response({"error": "asset not found"}, status=400)
         return JsonResponse(asset_story)
