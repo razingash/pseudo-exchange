@@ -80,12 +80,10 @@ def get_user_transfers(account_uuid):
     transfers = Transfer.objects.filter(Q(sender_id=account_id) | Q(receiver_id=account_id))
     return transfers
 
-
 def get_current_credit(account_uuid):
     account_id = get_user_id(account_uuid)
     credit = Credit.objects.filter(account_id=account_id) #
     return credit
-
 
 def get_fresh_rates():
     rates = RateList.objects.latest('measurement_date').data.path
@@ -99,7 +97,6 @@ def get_user_conversions(account_uuid):
     account_id = get_user_id(account_uuid)
     conversions = Conversion.objects.filter(account_id=account_id)
     return conversions
-
 
 def get_user_transaction(account_uuid):
     account_id = get_user_id(account_uuid)
@@ -121,7 +118,8 @@ def get_asset_story(asset_id):
             json_data = json.load(json_file)
         return json_data
 
-def update_pay_credit_early(sender_uuid, money_for_repayment, credit_id): # ready
+
+def update_pay_credit_early(sender_uuid, money_for_repayment, credit_id):
     sender_id = get_user_id(sender_uuid)
     client_potential = check_client_potential(user_id=sender_id, amount=money_for_repayment)
     if client_potential:

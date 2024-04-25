@@ -2,13 +2,12 @@ import uuid
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from rest_framework import serializers
 
 from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, ForeignCurrencyWallet, \
     AccountAsset, Assets, Currencies, TransactionTypes
-from bank.services import get_user_id, check_client_potential, CustomException
+from bank.services import get_user_id, check_client_potential
 
 
 class RegistrationSerializer(serializers.ModelSerializer):

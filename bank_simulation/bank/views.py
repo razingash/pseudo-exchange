@@ -1,5 +1,6 @@
 from json import load
 
+from django.db import transaction
 from django.http import JsonResponse
 from rest_framework.authentication import get_authorization_header
 from rest_framework.permissions import IsAuthenticated
@@ -148,6 +149,7 @@ class ConversionApi(APIView):
         conversion = get_user_conversions(account_uuid)
         return Response({'conversions': ConversionGetSerializer(conversion, many=True).data})
 
+    @transaction.atomic
     @custom_exception
     def post(self, request): # convert currency
         account_uuid = request.data.get('uuid')
@@ -192,6 +194,7 @@ class TransactionsApi(APIView):
         transactions = get_user_transaction(account_uuid)
         return Response({'conversions': AccountTransactionsSerializer(transactions, many=True).data})
 
+    @transaction.atomic
     @custom_exception
     def post(self, request): # buy assets
         account_uuid = request.data.get('uuid')
