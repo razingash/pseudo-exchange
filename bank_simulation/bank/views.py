@@ -58,8 +58,6 @@ class ForeignCurrencyWalletApi(APIView): #
         serializer.is_valid(raise_exception=True)
         fc_wallet = create_new_wallet(account_uuid=account_uuid, currency=data['currency'])
 
-        if fc_wallet is False:
-            return Response({"error": f"you already have a wallet with {data['currency']} currency"}, status=400)
         return Response({'transfer': ForeignCurrencyWalletSerializer(fc_wallet, many=False).data})
 
 
@@ -119,7 +117,7 @@ class CreditApi(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response({'post': serializer.data})
+        return Response({'new credit': serializer.data})
 
     @custom_exception
     def patch(self, request): # pay for the credit early
@@ -137,7 +135,7 @@ class CreditApi(APIView):
         credit = update_pay_credit_early(sender_uuid=account_uuid, money_for_repayment=money_for_repayment,
                                          credit_id=credit_id)
 
-        return Response({'patch': CreditSerializer(credit, many=False).data})
+        return Response({'updated credit': CreditSerializer(credit, many=False).data})
 
 
 class ConversionApi(APIView):
@@ -168,11 +166,6 @@ class ConversionApi(APIView):
         conversion = create_conversion(account_uuid=account_uuid, amount=amount, starting_currency=starting_currency,
                                        final_currency=final_currency)
 
-        if conversion is True:
-            return Response({"error": f"you don't have a wallet with s {starting_currency} currency"}, status=400)
-        if conversion is False:
-            return Response({"error": f"you don't have a wallet with f {final_currency} currency"}, status=400)
-
         return Response({'conversion': ConversionSerializer(conversion, many=False).data})
 
 
@@ -192,7 +185,7 @@ class TransactionsApi(APIView):
     def get(self, request):
         account_uuid = request.data.get('uuid')
         transactions = get_user_transaction(account_uuid)
-        return Response({'conversions': AccountTransactionsSerializer(transactions, many=True).data})
+        return Response({'transactions': AccountTransactionsSerializer(transactions, many=True).data})
 
     @transaction.atomic
     @custom_exception
@@ -213,10 +206,9 @@ class TransactionsApi(APIView):
         transaction_type = data['transaction_type']
         currency_type = data['currency_type']
 
-
-        transaction = create_new_transaction(account_uuid=account_uuid, amount=amount, currency_type=currency_type,
-                                             transaction_type=transaction_type, asset_id=asset_id)
-        return Response({'transaction': AccountTransactionsSerializer(transaction, many=False).data})
+        current_transaction = create_new_transaction(account_uuid=account_uuid, amount=amount, asset_id=asset_id,
+                                                     currency_type=currency_type, transaction_type=transaction_type)
+        return Response({'transaction': AccountTransactionsSerializer(current_transaction, many=False).data})
 
 
 class AccountAssetsApi(APIView):
@@ -226,7 +218,7 @@ class AccountAssetsApi(APIView):
     def get(self, request):
         account_uuid = request.data.get('uuid')
         user_assets = get_user_assets(account_uuid)
-        return Response({'conversions': AccountAssetsSerializer(user_assets, many=True).data})
+        return Response({'user assets': AccountAssetsSerializer(user_assets, many=True).data})
 
 class AssetStoryApi(APIView):
     permission_classes = (IsAuthenticated, IsUuidProvided)

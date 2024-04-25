@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -151,7 +152,7 @@ def create_new_wallet(account_uuid, currency):
         raise CustomException("you already have a wallet with this currency by default")
     account_id = get_user_id(account_uuid)
     if check_user_wallet(account_id, currency):
-        return False
+        raise CustomException(f"you already have a wallet with {currency} currency")
     new_wallet = ForeignCurrencyWallet.objects.create(account_id=account_id, currency=currency)
     return new_wallet
 
@@ -162,10 +163,10 @@ def create_conversion(account_uuid, amount, starting_currency, final_currency):
     rate = RateList.objects.only('id').latest('measurement_date').id
     if starting_currency != "USD":
         if not check_user_wallet(account_id, starting_currency):
-            return True
+            raise CustomException(f"you don't have a wallet with s {starting_currency} currency")
     if final_currency != "USD":
         if not check_user_wallet(account_id, final_currency):
-            return False
+            raise CustomException(f"you don't have a wallet with f {final_currency} currency")
     client_potential = check_client_potential(user_id=account_id, amount=amount)
     if client_potential:
         conversion = Conversion.objects.create(account_id=account_id, amount=amount,
@@ -175,19 +176,22 @@ def create_conversion(account_uuid, amount, starting_currency, final_currency):
             from_wallet = Account.objects.get(account_auth_info_id=account_id)
             to_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=final_currency)
             from_wallet.balance -= amount
-            to_wallet.balance += amount
+            received_money = 0.01 * (100 - conversion.conversion_percentage) * amount
+            to_wallet.balance += round(Decimal(received_money), 2)
             from_wallet.save(), to_wallet.save()
         elif final_currency == "USD":
             from_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=starting_currency)
             to_wallet = Account.objects.get(account_auth_info_id=account_id)
             from_wallet.balance -= amount
-            to_wallet.balance += amount
+            received_money = 0.01 * (100 - conversion.conversion_percentage) * amount
+            to_wallet.balance += round(Decimal(received_money), 2)
             from_wallet.save(), to_wallet.save()
         else:
             from_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=starting_currency)
             to_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=final_currency)
             from_wallet.balance -= amount
-            to_wallet.balance += amount
+            received_money = 0.01 * (100 - conversion.conversion_percentage) * amount
+            to_wallet.balance += round(Decimal(received_money), 2)
             from_wallet.save(), to_wallet.save()
         return conversion
     return client_potential
