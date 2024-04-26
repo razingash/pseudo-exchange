@@ -20,6 +20,14 @@ def custom_exception(func: callable):
             return Response({"error": f"{e}"}, status=400)
     return wrapper
 
+def positive_volatility_adjustment(price, base_volatility, threshold):
+    if price > threshold:
+        reduction_factor = 1 / ((price - threshold) // 50 + 1)
+        return base_volatility * reduction_factor
+    else:
+        return base_volatility
+
+
 def get_user_id(account_uuid):
     try:
         user_id = AccountAuthInfo.objects.only('id').get(uuid=account_uuid).pk
