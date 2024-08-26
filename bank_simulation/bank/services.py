@@ -6,7 +6,6 @@ from django.db.models import Q
 from rest_framework.response import Response
 from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, RateList, ForeignCurrencyWallet, \
     ConversionRate, InvestmentTransaction, AccountAsset, Assets, UserTransaction
-from rest_framework.authtoken.models import Token
 
 class CustomException(Exception):
     def __init__(self, message):
@@ -19,6 +18,15 @@ def custom_exception(func: callable):
         except CustomException as e:
             return Response({"error": f"{e}"}, status=400)
     return wrapper
+
+def to_int(value):
+    try:
+        value = int(value)
+    except (ValueError, TypeError):
+        return None
+    else:
+        return value
+
 
 def positive_volatility_adjustment(price, base_volatility, threshold):
     if price > threshold:
@@ -66,56 +74,28 @@ def check_user_wallet(user_id, currency):
         return True
     return False
 
+def get_objects_list(model, amount):
+    data = model.objects.all()[:to_int(amount)].order_by('-id')
+    return data
+
+def get_objects_by_uuid(model, account_uuid):
+    account_id = get_user_id(account_uuid=account_uuid)
+    obj = model.objects.filter(account_id=account_id)
+    return obj
+
 def get_account_info(account_uuid):
     account_id = get_user_id(account_uuid)
     account = Account.objects.get(account_auth_info_id=account_id)
     return account
-
-def get_user_uuid(key):
-    try:
-        user_id = Token.objects.only('user_id').get(key=key).user_id
-        user_uuid = AccountAuthInfo.objects.only('uuid').get(id=user_id)
-    except Token.DoesNotExist:
-        raise CustomException("Account not found")
-    return user_uuid
-
-def get_additional_wallets(account_uuid):
-    account_id = get_user_id(account_uuid=account_uuid)
-    wallets = ForeignCurrencyWallet.objects.filter(account_id=account_id)
-    return wallets
 
 def get_user_transfers(account_uuid):
     account_id = get_user_id(account_uuid)
     transfers = Transfer.objects.filter(Q(sender_id=account_id) | Q(receiver_id=account_id))
     return transfers
 
-def get_current_credit(account_uuid):
-    account_id = get_user_id(account_uuid)
-    credit = Credit.objects.filter(account_id=account_id) #
-    return credit
-
 def get_fresh_rates():
     rates = RateList.objects.latest('measurement_date').data.path
     return rates
-
-def get_assets():
-    assets_list = Assets.objects.all()
-    return assets_list
-
-def get_user_conversions(account_uuid):
-    account_id = get_user_id(account_uuid)
-    conversions = Conversion.objects.filter(account_id=account_id)
-    return conversions
-
-def get_user_transaction(account_uuid):
-    account_id = get_user_id(account_uuid)
-    transactions = InvestmentTransaction.objects.filter(account_id=account_id)
-    return transactions
-
-def get_user_assets(account_uuid):
-    account_id = get_user_id(account_uuid)
-    assets = AccountAsset.objects.filter(account_id=account_id)
-    return assets
 
 def get_asset_story(asset_id):
     try:
@@ -208,6 +188,7 @@ def create_new_transaction(account_uuid, amount, transaction_type, currency_type
     account_id = get_user_id(account_uuid)
     amount = int(amount)
     asset = Assets.objects.filter(id=asset_id)
+
     if not asset.exists():
         raise CustomException(f"there is no such assets like {asset_id}")
     if asset[0].currency_type != currency_type:
@@ -215,6 +196,7 @@ def create_new_transaction(account_uuid, amount, transaction_type, currency_type
     if currency_type != "USD":
         if not check_user_wallet(account_id, currency_type):
             raise CustomException(f"you need a wallet with '{currency_type}' to make this deal")
+
     if transaction_type == "P": # purchase
         client_potential = check_client_potential_assets(user_id=account_id, amount=amount, currency_type=currency_type,
                                                          asset_id=asset_id)

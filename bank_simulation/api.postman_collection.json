@@ -19,12 +19,12 @@
 							"formdata": [
 								{
 									"key": "username",
-									"value": "postman1",
+									"value": "postman3",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "postman1",
+									"value": "postman3",
 									"type": "text"
 								},
 								{
@@ -59,25 +59,18 @@
 					"name": "login",
 					"request": {
 						"method": "POST",
-						"header": [
-							{
-								"key": "",
-								"value": "",
-								"type": "text",
-								"disabled": true
-							}
-						],
+						"header": [],
 						"body": {
 							"mode": "formdata",
 							"formdata": [
 								{
 									"key": "username",
-									"value": "postman1",
+									"value": "postman3",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "postman1",
+									"value": "postman3",
 									"type": "text"
 								}
 							]
@@ -136,52 +129,9 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "uuid",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/get_uuid/",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "8000",
-							"path": [
-								"api",
-								"v1",
-								"get_uuid",
-								""
-							]
-						}
-					},
-					"response": []
 				}
 			],
-			"description": "in response to registration and authorization (not working now) you will receive a uuid, which you need to save, and you need to use it to access most tables."
+			"description": "in response to authorization (not working now) you will receive a uuid, which you need to save, and you need to use it to access most tables."
 		},
 		{
 			"name": "current account info",
@@ -196,13 +146,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -210,7 +160,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/account/",
+							"raw": "http://127.0.0.1:8000/api/v1/account/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -223,6 +173,7 @@
 								"api",
 								"v1",
 								"account",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
 								""
 							]
 						}
@@ -239,13 +190,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -253,7 +204,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/wallets/",
+							"raw": "http://127.0.0.1:8000/api/v1/wallets/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -266,6 +217,7 @@
 								"api",
 								"v1",
 								"wallets",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
 								""
 							]
 						}
@@ -279,13 +231,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"core\": [\r\n        {\r\n            \"currency\": \"INR\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"currency\": \"EUR\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -293,7 +245,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/wallets/",
+							"raw": "http://127.0.0.1:8000/api/v1/wallets/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -306,6 +258,7 @@
 								"api",
 								"v1",
 								"wallets",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
 								""
 							]
 						}
@@ -322,13 +275,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -371,13 +324,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -385,7 +338,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/transfer/",
+							"raw": "http://127.0.0.1:8000/api/v1/transfers/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -397,7 +350,8 @@
 							"path": [
 								"api",
 								"v1",
-								"transfer",
+								"transfers",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
 								""
 							]
 						}
@@ -411,13 +365,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"core\": [\r\n        {\r\n            \"amount\": \"1000\",\r\n            \"sender\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n            \"receiver\": \"98d24f13-11c8-4e00-8084-b5cd57efccaa\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"amount\": \"1000\",\r\n    \"receiver\": \"98d24f13-11c8-4e00-8084-b5cd57efccaa\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -425,7 +379,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/transfer/",
+							"raw": "http://127.0.0.1:8000/api/v1/transfers/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -437,7 +391,8 @@
 							"path": [
 								"api",
 								"v1",
-								"transfer",
+								"transfers",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
 								""
 							]
 						}
@@ -460,13 +415,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -474,7 +429,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/credits/",
+							"raw": "http://127.0.0.1:8000/api/v1/credits/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -487,6 +442,7 @@
 								"api",
 								"v1",
 								"credits",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
 								""
 							]
 						}
@@ -500,13 +456,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"core\": [\r\n        {\r\n            \"account\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n            \"credit_type\": \"1\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"credit_type\": \"1\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -514,7 +470,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/credits/",
+							"raw": "http://127.0.0.1:8000/api/v1/credits/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -527,6 +483,7 @@
 								"api",
 								"v1",
 								"credits",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
 								""
 							]
 						}
@@ -540,13 +497,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"core\": [\r\n        {\r\n            \"amount\": \"1000\",\r\n            \"credit_id\": \"1\",\r\n            \"account\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"amount\": \"1000\",\r\n    \"credit_id\": \"2\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -554,7 +511,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/credits/",
+							"raw": "http://127.0.0.1:8000/api/v1/credits/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -567,6 +524,7 @@
 								"api",
 								"v1",
 								"credits",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
 								""
 							]
 						}
@@ -589,13 +547,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -603,7 +561,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/conversion/",
+							"raw": "http://127.0.0.1:8000/api/v1/conversions/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -615,7 +573,8 @@
 							"path": [
 								"api",
 								"v1",
-								"conversion",
+								"conversions",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
 								""
 							]
 						}
@@ -629,13 +588,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"core\": [\r\n        {\r\n            \"amount\": \"777\",\r\n            \"starting_currency\": \"USD\",\r\n            \"final_currency\": \"INR\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"amount\": \"777\",\r\n    \"starting_currency\": \"USD\",\r\n    \"final_currency\": \"INR\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -643,7 +602,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/conversion/",
+							"raw": "http://127.0.0.1:8000/api/v1/conversions/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -655,7 +614,8 @@
 							"path": [
 								"api",
 								"v1",
-								"conversion",
+								"conversions",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
 								""
 							]
 						}
@@ -669,65 +629,16 @@
 			"name": "Assets",
 			"item": [
 				{
-					"name": "user transactions",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/transactions/",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "8000",
-							"path": [
-								"api",
-								"v1",
-								"transactions",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "assets list",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
-								"type": "text"
-							}
-						],
+						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -764,13 +675,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -778,7 +689,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/user-assets/",
+							"raw": "http://127.0.0.1:8000/api/v1/user-assets/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -791,46 +702,7 @@
 								"api",
 								"v1",
 								"user-assets",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create new transaction",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"asset_id\": \"1\",\r\n    \"core\": [\r\n        {\r\n            \"transaction_type\": \"P\",\r\n            \"currency_type\": \"USD\",\r\n            \"amount\": \"10\"\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/transactions/",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "8000",
-							"path": [
-								"api",
-								"v1",
-								"transactions",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
 								""
 							]
 						}
@@ -847,13 +719,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"core\": [\r\n        {\r\n            \"asset_id\": \"2\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"asset_id\": \"2\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -874,6 +746,91 @@
 								"api",
 								"v1",
 								"asset-story",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user assets transactions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/transactions/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create asset transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"asset_id\": \"1\",\r\n    \"transaction_type\": \"P\",\r\n    \"currency_type\": \"USD\",\r\n    \"amount\": \"10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/transactions/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
 								""
 							]
 						}

@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_celery_beat',
     'djoser',
-    'debug_toolbar'
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware'
+    'corsheaders.middleware.CorsMiddleware'
 ]
 
 ROOT_URLCONF = 'bank_simulation.urls'
@@ -137,6 +137,11 @@ INTERNAL_IPS = [
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_RENDERED_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableApiRenderer'
+    ],
+
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny'
     ],
@@ -145,6 +150,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000"
+]
 
 DJOSER = {
     'SERIALIZERS': {
