@@ -25,8 +25,14 @@ const AuthForm = ({onClose}) => {
                 {isNewbie ? (
                     <>
                     <form onSubmit={registerUser} className={"form__auth"} method={"POST"}>
-                        <input className={"form__auth__input"} onChange={e => {setUsername(e.target.value)}} value={username} type={"text"} placeholder={"username"}/>
-                        <input className={"form__auth__input"} onChange={e => {setPassword(e.target.value)}} value={password} type={"password"} placeholder={"password"}/>
+                        <div className={"input__field"}>
+                            <input className={"form__auth__input"} onChange={e => {setUsername(e.target.value)}} value={username} type={"text"} placeholder={"username"}/>
+                            <svg className="svg__icon"><use xlinkHref="#icon_user"></use></svg>
+                        </div>
+                        <div className={"input__field"}>
+                            <input className={"form__auth__input"} onChange={e => {setPassword(e.target.value)}} value={password} type={"password"} placeholder={"password"}/>
+                            <svg className="svg__icon"><use xlinkHref="#icon_lock"></use></svg>
+                        </div>
                         <button className={"form__auth__submit"}>submit</button>
                     </form>
                     <div onClick={changeAuth} className={"auth__change"}>sign in</div>
@@ -34,8 +40,14 @@ const AuthForm = ({onClose}) => {
                 ) : (
                     <>
                     <form onSubmit={loginUser} className={"form__auth"} method={"POST"}>
-                        <input className={"form__auth__input"} onChange={e => {setUsername(e.target.value)}} value={username} type={"text"} placeholder={"username"}/>
-                        <input className={"form__auth__input"} onChange={e => {setPassword(e.target.value)}} value={password} type={"password"} placeholder={"password"}/>
+                        <div className={"input__field"}>
+                            <input className={"form__auth__input"} onChange={e => {setUsername(e.target.value)}} value={username} type={"text"} placeholder={"username"}/>
+                            <svg className="svg__icon"><use xlinkHref="#icon_user"></use></svg>
+                        </div>
+                        <div className={"input__field"}>
+                            <input className={"form__auth__input"} onChange={e => {setPassword(e.target.value)}} value={password} type={"password"} placeholder={"password"}/>
+                            <svg className="svg__icon"><use xlinkHref="#icon_lock"></use></svg>
+                        </div>
                         <button className={"form__auth__submit"}>submit</button>
                     </form>
                     <div onClick={changeAuth} className={"auth__change"}>sign up</div>

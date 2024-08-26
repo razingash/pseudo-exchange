@@ -27,10 +27,26 @@
 .form__auth > * {
     margin: 15px 0;
 }
+.input__field{
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+.svg__icon{
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+}
+.svg__icon use {
+    fill: #fff;
+}
 .form__auth__input {
     padding: 6px;
     width: 100%;
     font-size: 0.8em;
+}
+.form__auth__input:focus-visible + .svg__icon use {
+    fill: var(--selected-item);
 }
 .form__auth__submit {
     width: fit-content;
