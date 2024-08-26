@@ -23,7 +23,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AccountAuthInfo
-        fields = ('username', 'password', 'pin', 'uuid')
+        fields = ('username', 'password', 'uuid') # there was pin
 
 
 class GetUuidSerializer(serializers.ModelSerializer):

@@ -3,3 +3,4 @@
 /bank_simulation/db.sqlite3
 /bank_simulation/bank/migrations/0001_initial.py
 /bank_simulation/media
+/frontend/node_modules
