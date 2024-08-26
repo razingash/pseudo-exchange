@@ -1,0 +1,887 @@
+{
+	"info": {
+		"_postman_id": "44e650a4-f31e-49eb-8d10-e38c0f1c590c",
+		"name": "api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34255180"
+	},
+	"item": [
+		{
+			"name": "auth/reg",
+			"item": [
+				{
+					"name": "registration",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "postman1",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "postman1",
+									"type": "text"
+								},
+								{
+									"key": "pin",
+									"value": "7777",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/registration/users/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"registration",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "postman1",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "postman1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/auth/token/login/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"token",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/auth/token/logout/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"token",
+								"logout",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "uuid",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/get_uuid/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"get_uuid",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "in response to registration and authorization (not working now) you will receive a uuid, which you need to save, and you need to use it to access most tables."
+		},
+		{
+			"name": "current account info",
+			"item": [
+				{
+					"name": "account info",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/account/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"account",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user additional wallets",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/wallets/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"wallets",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create new wallet",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"core\": [\r\n        {\r\n            \"currency\": \"INR\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/wallets/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"wallets",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get fresh rates",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/rates/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"rates",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "info about wallets\n\n- Main in USD\n    \n- Additional"
+		},
+		{
+			"name": "transfers",
+			"item": [
+				{
+					"name": "user transfers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/transfer/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"transfer",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create new transfer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"core\": [\r\n        {\r\n            \"amount\": \"1000\",\r\n            \"sender\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n            \"receiver\": \"98d24f13-11c8-4e00-8084-b5cd57efccaa\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/transfer/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"transfer",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "money transfer between accounts by uuid"
+		},
+		{
+			"name": "credits",
+			"item": [
+				{
+					"name": "user credits",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/credits/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"credits",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create new credit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"core\": [\r\n        {\r\n            \"account\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n            \"credit_type\": \"1\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/credits/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"credits",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pay for credit",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"core\": [\r\n        {\r\n            \"amount\": \"1000\",\r\n            \"credit_id\": \"1\",\r\n            \"account\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/credits/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"credits",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "processing and repayment of loans  \nPost request is a bit crazy  \npatch too - I’ll fix it later"
+		},
+		{
+			"name": "conversions",
+			"item": [
+				{
+					"name": "user conversions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/conversion/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"conversion",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "convert currency",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"core\": [\r\n        {\r\n            \"amount\": \"777\",\r\n            \"starting_currency\": \"USD\",\r\n            \"final_currency\": \"INR\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/conversion/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"conversion",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "converting money from one currency to another. Standard currency USD"
+		},
+		{
+			"name": "Assets",
+			"item": [
+				{
+					"name": "user transactions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/transactions/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "assets list",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/assets/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"assets",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user assets",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/user-assets/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"user-assets",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create new transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"asset_id\": \"1\",\r\n    \"core\": [\r\n        {\r\n            \"transaction_type\": \"P\",\r\n            \"currency_type\": \"USD\",\r\n            \"amount\": \"10\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/transactions/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "asset story",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"9ec25737-9247-4c25-b93a-415bd7d5307a\",\r\n    \"core\": [\r\n        {\r\n            \"asset_id\": \"2\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/asset-story/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"asset-story",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "buying/selling assets that are regulated by the server"
+		}
+	]
+}
