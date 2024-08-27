@@ -27,7 +27,12 @@ class Currencies(models.TextChoices):
     KRW = 'KRW', 'South Korean won'
     PLN = 'PLN', 'Polish zloty'
     SEK = 'SEK', 'Swedish krona'
-    USD = 'USD', 'U.S. dollar'
+
+class Metalls(models.TextChoices):
+    XAG = "XAG", "silver"
+    XAU = "XAU", "gold"
+    XPD = "XPD", "palladium"
+    XPT = "XPT", "platinum"
 
 
 def validate_file_size(value):
@@ -39,7 +44,7 @@ def exchange_rates_upload(instance, filename):
     date = datetime.today()
     year, month, day = date.year, date.month, date.day
     filename = f'{day}.json'
-    file_path = f'json_data/{year}/{month}/{filename}'
+    file_path = f'currencies/{year}/{month}/{filename}'
     full_path = os.path.join(settings.MEDIA_ROOT, file_path)
     if os.path.exists(full_path):
         os.remove(full_path)
@@ -194,11 +199,54 @@ class InvestmentTransaction(models.Model):
         db_table = 'dt_InvestmentTransaction'
 
 
+class ValuableMetallsList(models.Model):
+    data = models.FilePathField(blank=True, null=True, path=os.path.join(settings.MEDIA_ROOT, 'valuable_metalls'),
+                                allow_files=True, match='.*\.json$')
+    metal = models.CharField(choices=Metalls.choices, blank=False, null=False, max_length=3)
+    cost = models.PositiveSmallIntegerField(blank=False, null=False)
+    timestamp = models.PositiveBigIntegerField(blank=False, null=False)
+
+    class Meta:
+        db_table = 'dt_ValuableMetallsList'
+
+@receiver(post_save, sender=ValuableMetallsList)
+def create_json_template_for_metalls(sender, instance, created, **kwargs):
+    json_path = os.path.join(settings.MEDIA_ROOT, 'valuable_metalls', f"{instance.metal}/{instance.metal}.json")
+    if created:
+        os.makedirs(os.path.dirname(json_path), exist_ok=True)# another magical error
+        # which does not occur in identical code in assets but pops up here
+        json_schema = {
+            "code": instance.metal,
+            "name": Metalls[instance.metal].label,
+            "contents": []
+        }
+        with open(json_path, 'w') as json_file:
+            json.dump(json_schema, json_file, indent=2)
+
+        instance.data = json_path
+        instance.save()
+    else:
+        with open(json_path, 'r') as json_file:
+            json_data = json.load(json_file)
+
+        json_data["contents"].append({
+            "timestamp": str(instance.timestamp),
+            "cost": instance.cost
+        })
+
+        with open(json_path, 'w') as json_file:
+            json.dump(json_data, json_file, indent=2)
+
+        if not instance.data:
+            instance.data = json_path
+            instance.save()
+
+
 class Assets(models.Model):
     ticker = models.CharField(max_length=6, blank=False, null=False)
     name = models.CharField(max_length=50, blank=False, null=False)
     cost = models.PositiveSmallIntegerField(default=100, blank=False, null=False)
-    currency_type = models.CharField(choices=Currencies.choices, default=Currencies.USD, max_length=3,
+    currency_type = models.CharField(choices=Currencies.choices, default=Currencies.EUR, max_length=3,
                                      blank=False, null=False)
     dividends = models.PositiveSmallIntegerField(default=2, blank=False, null=False)
     measurement_date = models.DateTimeField(auto_now=True, blank=False, null=False)
@@ -209,7 +257,7 @@ class Assets(models.Model):
         db_table = 'dt_Assets'
 
 @receiver(post_save, sender=Assets)
-def create_json_template(sender, instance, created, **kwargs):
+def create_json_template_for_assets(sender, instance, created, **kwargs):
     json_path = os.path.join(
         settings.MEDIA_ROOT, 'assets', f"{instance.ticker}.json"
     )

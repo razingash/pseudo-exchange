@@ -1,14 +1,16 @@
 import json
 import os
 import tempfile
+
 import requests
 import random
 
 from celery import shared_task
 from django.core.files import File
-
-from bank.models import RateList, Assets
+from bank.models import RateList, Assets, ValuableMetallsList, Metalls
 from bank.services import positive_volatility_adjustment
+
+#just run this functions in shell if you aren't working on unix
 
 @shared_task
 def update_rates_price(): # every day
@@ -29,9 +31,36 @@ def update_rates_price(): # every day
             json_file.close()
             os.unlink(json_file.name)
         else:
-            raise ConnectionRefusedError(f"Failed to download the file. HTTP Status Code: {response.status_code}")
+            raise ConnectionRefusedError(f"Failed to get data from the api. HTTP Status Code: {response.status_code}")
     except Exception as e:
         print(f'Exception during TASK update_rates_price:\n{e}')
+
+
+@shared_task
+def update_valuable_metalls_price(): # every day | 100 requests per month
+    url = "https://api.metalpriceapi.com/v1/latest?api_key=780f6268bb6e95f458ce1584fa8d564c&base=EUR&currencies=XPT,XAU,XAG,XPD"
+    try:
+        response = requests.get(url, timeout=10)
+        response = response.json()
+        if response["success"] is True:
+            timestamp = response["timestamp"]
+            vml = ValuableMetallsList.objects.all()
+            if len(vml) > 4:
+                for metal_code, metal_name in Metalls.choices:
+                    cost = response["rates"][f"EUR{metal_code}"]
+                    vml = ValuableMetallsList.objects.get(metal=metal_code)
+                    vml.cost = cost
+                    vml.timestamp = timestamp
+                    vml.save()
+            else:
+                for metal_code, metal_name in Metalls.choices:
+                    cost = response["rates"][f"EUR{metal_code}"]
+                    ValuableMetallsList.objects.create(metal=metal_code, cost=cost, timestamp=timestamp)
+        else:
+            raise ConnectionRefusedError(f"Failed to get data from the api. HTTP Status Code: {response.json()}")
+    except Exception as e:
+        print(f'Exception during TASK update_valuable_metalls_price:\n{e}')
+
 
 @shared_task
 def update_assets_price(): # every hour

@@ -40,14 +40,12 @@ class ForeignCurrencyWalletApi(APIView):
         return Response(ForeignCurrencyWalletSerializer(fc_wallet, many=False).data)
 
 
-class CurrentRatesApi(APIView):
-    permission_classes = (IsAuthenticated, ) # mb add later new custom permission for limited update
-
+class CurrentRatesApi(APIView): # mb add later new custom permission for limited update
     def get(self, request):
         rates = get_fresh_rates()
         with open(rates, 'r') as json_file:
             json_data = load(json_file)
-        return Response({'current rates': json_data})
+        return Response(json_data)
 
 
 class TransferApi(APIView):

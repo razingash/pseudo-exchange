@@ -1,0 +1,47 @@
+import React, {useEffect, useState} from 'react';
+import ApiRates from "../../../API/RatesService";
+import {useFetching} from "../../../hooks/useFetching";
+import "./ratesTable.css"
+
+const RatesTable = () => {
+    const [rates, setRates] = useState([]);
+    const [fetchRates] = useFetching(async () => {
+        const response = await ApiRates.getRates();
+        setRates(response)
+    })
+    const columns = [
+        { id: 'code', title: 'Code' },
+        { id: 'name', title: 'Name' },
+        { id: 'rate', title: 'Rate' },
+        { id: 'inverseRate', title: 'Inverse Rate' }
+    ];
+    //after making loading effect remove void and import isLoading (and error?)
+    //add comparison to previous day? mb no need in future
+    useEffect(() => {
+        void fetchRates();
+    }, [])
+    const rateEntries = Object.values(rates);
+    const firstDate = rateEntries.length > 0 ? rateEntries[0].date : 'No measurement date available';
+
+    return (
+        <div className={"section__rates"}>
+            <div className={"area__rates"}>
+                <div className={"rate__info"}>{firstDate}</div>
+                <div className={"table__rates"}>
+                    {columns.map((column) => (
+                    <div className={"rates__column"} key={column.id}>
+                        <div className={"rates__header"} key={column.title}>{column.title}</div>
+                        <div className={"rates__data"}>
+                            {rateEntries.map(rate => (
+                            <div className={"rates__data__item"} key={rate.id}>{rate[column.id]}</div>
+                            ))}
+                        </div>
+                    </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default RatesTable;
