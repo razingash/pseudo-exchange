@@ -1,5 +1,3 @@
-from json import load
-
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -9,9 +7,9 @@ from bank.models import ForeignCurrencyWallet, Conversion, InvestmentTransaction
 from bank.serializers import AccountSerializer, TransferSerializer, CreditSerializer, ConversionSerializer, \
     ConversionGetSerializer, ForeignCurrencyWalletSerializer, ForeignCurrencyWalletsSerializer,\
     AccountTransactionsSerializer, AccountAssetsSerializer, AssetsListSerializer
-from bank.services import get_user_transfers, update_pay_credit_early, get_fresh_rates, create_conversion, \
-    create_new_wallet, get_account_info, create_new_transaction, get_asset_story, custom_exception,\
-    get_objects_by_uuid, get_objects_list
+from bank.services import get_user_transfers, update_pay_credit_early, get_currencies_rates_json, create_conversion, \
+    create_new_wallet, get_account_info, create_new_transaction, get_asset_story, custom_exception, \
+    get_objects_by_uuid, get_objects_list, get_metals_json
 
 
 class AccountApiView(APIView):
@@ -38,14 +36,6 @@ class ForeignCurrencyWalletApi(APIView):
         fc_wallet = create_new_wallet(account_uuid=account_uuid, currency=request.data.get('currency'))
 
         return Response(ForeignCurrencyWalletSerializer(fc_wallet, many=False).data)
-
-
-class CurrentRatesApi(APIView): # mb add later new custom permission for limited update
-    def get(self, request):
-        rates = get_fresh_rates()
-        with open(rates, 'r') as json_file:
-            json_data = load(json_file)
-        return Response(json_data)
 
 
 class TransferApi(APIView):
@@ -166,11 +156,19 @@ class AssetStoryApi(APIView):
     permission_classes = (IsAuthenticated, )
 
     @custom_exception
-    def get(self, request):
-        try:
-            asset_id = request.data.get('asset_id')
-        except KeyError:
-            return Response({"error": "'asset_id' is requiered"}, status=400)
-
+    def get(self, request, asset_id):
         asset_story = get_asset_story(asset_id)
         return JsonResponse(asset_story)
+
+
+class CurrentRatesApi(APIView): # mb add later new custom permission for limited update
+    def get(self, request):
+        json_rates = get_currencies_rates_json()
+        return Response(json_rates)
+
+
+class PreciousMetalsRatesApi(APIView):
+    def get(self, request):
+        metals = get_metals_json()
+        return Response(metals)
+

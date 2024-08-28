@@ -7,7 +7,7 @@ import random
 
 from celery import shared_task
 from django.core.files import File
-from bank.models import RateList, Assets, ValuableMetallsList, Metalls
+from bank.models import RateList, Assets, ValuableMetalsList, Metals
 from bank.services import positive_volatility_adjustment
 
 #just run this functions in shell if you aren't working on unix
@@ -37,29 +37,29 @@ def update_rates_price(): # every day
 
 
 @shared_task
-def update_valuable_metalls_price(): # every day | 100 requests per month
+def update_valuable_metals_price(): # every day | 100 requests per month
     url = "https://api.metalpriceapi.com/v1/latest?api_key=780f6268bb6e95f458ce1584fa8d564c&base=EUR&currencies=XPT,XAU,XAG,XPD"
     try:
         response = requests.get(url, timeout=10)
         response = response.json()
         if response["success"] is True:
             timestamp = response["timestamp"]
-            vml = ValuableMetallsList.objects.all()
+            vml = ValuableMetalsList.objects.all()
             if len(vml) > 4:
-                for metal_code, metal_name in Metalls.choices:
+                for metal_code, metal_name in Metals.choices:
                     cost = response["rates"][f"EUR{metal_code}"]
-                    vml = ValuableMetallsList.objects.get(metal=metal_code)
+                    vml = ValuableMetalsList.objects.get(metal=metal_code)
                     vml.cost = cost
                     vml.timestamp = timestamp
                     vml.save()
             else:
-                for metal_code, metal_name in Metalls.choices:
+                for metal_code, metal_name in Metals.choices:
                     cost = response["rates"][f"EUR{metal_code}"]
-                    ValuableMetallsList.objects.create(metal=metal_code, cost=cost, timestamp=timestamp)
+                    ValuableMetalsList.objects.create(metal=metal_code, cost=cost, timestamp=timestamp)
         else:
             raise ConnectionRefusedError(f"Failed to get data from the api. HTTP Status Code: {response.json()}")
     except Exception as e:
-        print(f'Exception during TASK update_valuable_metalls_price:\n{e}')
+        print(f'Exception during TASK update_valuable_metals_price:\n{e}')
 
 
 @shared_task

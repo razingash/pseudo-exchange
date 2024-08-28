@@ -28,23 +28,26 @@ class Currencies(models.TextChoices):
     PLN = 'PLN', 'Polish zloty'
     SEK = 'SEK', 'Swedish krona'
 
-class Metalls(models.TextChoices):
+class Metals(models.TextChoices):
     XAG = "XAG", "silver"
     XAU = "XAU", "gold"
     XPD = "XPD", "palladium"
     XPT = "XPT", "platinum"
 
 
-def validate_file_size(value):
-    max_size = 1 * 512 * 512
-    if value.size > max_size:
-        raise ValidationError(f'Maximum file size mustn\'t exceed {max_size} bytes.')
-
 def exchange_rates_upload(instance, filename):
     date = datetime.today()
     year, month, day = date.year, date.month, date.day
     filename = f'{day}.json'
     file_path = f'currencies/{year}/{month}/{filename}'
+    full_path = os.path.join(settings.MEDIA_ROOT, file_path)
+    if os.path.exists(full_path):
+        os.remove(full_path)
+    return file_path
+
+def valuable_metals_upload(instance, filename):
+    filename = f'{instance.metal}.json'
+    file_path = f'valuable_metals/{instance.metal}/{filename}'
     full_path = os.path.join(settings.MEDIA_ROOT, file_path)
     if os.path.exists(full_path):
         os.remove(full_path)
@@ -173,7 +176,7 @@ class Conversion(models.Model):
 
 class RateList(models.Model):
     measurement_date = models.DateField(auto_now_add=True, blank=False, null=False)
-    data = models.FileField(validators=[validate_file_size, FileExtensionValidator(['json'])], blank=False,
+    data = models.FileField(validators=[FileExtensionValidator(['json'])], blank=False,
                             null=False, upload_to=exchange_rates_upload)
 
     class Meta:
@@ -199,25 +202,24 @@ class InvestmentTransaction(models.Model):
         db_table = 'dt_InvestmentTransaction'
 
 
-class ValuableMetallsList(models.Model):
-    data = models.FilePathField(blank=True, null=True, path=os.path.join(settings.MEDIA_ROOT, 'valuable_metalls'),
-                                allow_files=True, match='.*\.json$')
-    metal = models.CharField(choices=Metalls.choices, blank=False, null=False, max_length=3)
+class ValuableMetalsList(models.Model):
+    data = models.FileField(validators=[FileExtensionValidator(['json'])], blank=False, null=False,
+                            upload_to=valuable_metals_upload)
+    metal = models.CharField(choices=Metals.choices, blank=False, null=False, max_length=3)
     cost = models.PositiveSmallIntegerField(blank=False, null=False)
     timestamp = models.PositiveBigIntegerField(blank=False, null=False)
 
     class Meta:
-        db_table = 'dt_ValuableMetallsList'
+        db_table = 'dt_ValuableMetalsList'
 
-@receiver(post_save, sender=ValuableMetallsList)
-def create_json_template_for_metalls(sender, instance, created, **kwargs):
-    json_path = os.path.join(settings.MEDIA_ROOT, 'valuable_metalls', f"{instance.metal}/{instance.metal}.json")
+@receiver(post_save, sender=ValuableMetalsList)
+def create_json_template_for_metals(sender, instance, created, **kwargs):
+    json_path = os.path.join(settings.MEDIA_ROOT, 'valuable_metals', f"{instance.metal}/{instance.metal}.json")
     if created:
-        os.makedirs(os.path.dirname(json_path), exist_ok=True)# another magical error
-        # which does not occur in identical code in assets but pops up here
+        os.makedirs(os.path.dirname(json_path), exist_ok=True)
         json_schema = {
             "code": instance.metal,
-            "name": Metalls[instance.metal].label,
+            "name": Metals[instance.metal].label,
             "contents": []
         }
         with open(json_path, 'w') as json_file:
@@ -271,7 +273,7 @@ def create_json_template_for_assets(sender, instance, created, **kwargs):
         }
 
         with open(json_path, 'w') as json_file:
-            json.dump(json_schema, json_file, indent=4)
+            json.dump(json_schema, json_file, indent=2)
 
         instance.data = json_path
         instance.save()
@@ -285,7 +287,7 @@ def create_json_template_for_assets(sender, instance, created, **kwargs):
         })
 
         with open(json_path, 'w') as json_file:
-            json.dump(json_data, json_file, indent=4)
+            json.dump(json_data, json_file, indent=2)
 
         if not instance.data:
             instance.data = json_path

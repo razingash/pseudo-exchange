@@ -5,7 +5,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from rest_framework.response import Response
 from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, RateList, ForeignCurrencyWallet, \
-    ConversionRate, InvestmentTransaction, AccountAsset, Assets, UserTransaction
+    ConversionRate, InvestmentTransaction, AccountAsset, Assets, UserTransaction, ValuableMetalsList, Metals
+
 
 class CustomException(Exception):
     def __init__(self, message):
@@ -93,9 +94,20 @@ def get_user_transfers(account_uuid):
     transfers = Transfer.objects.filter(Q(sender_id=account_id) | Q(receiver_id=account_id))
     return transfers
 
-def get_fresh_rates():
+def get_currencies_rates_json(): # currencies
     rates = RateList.objects.latest('measurement_date').data.path
+    with open(rates, 'r') as json_file:
+        rates = json.load(json_file)
     return rates
+
+def get_metals_json():
+    metals = []
+    for metal_code, metal_name in Metals.choices:
+        metal = ValuableMetalsList.objects.get(metal=metal_code).data.path
+        with open(metal, 'r') as json_file:
+            metals.append(json.load(json_file))
+    return metals
+
 
 def get_asset_story(asset_id):
     try:

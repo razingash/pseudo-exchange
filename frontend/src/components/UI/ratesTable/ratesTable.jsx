@@ -6,7 +6,7 @@ import "./ratesTable.css"
 const RatesTable = () => {
     const [rates, setRates] = useState([]);
     const [fetchRates] = useFetching(async () => {
-        const response = await ApiRates.getRates();
+        const response = await ApiRates.getCurrenciesRates();
         setRates(response)
     })
     const columns = [
