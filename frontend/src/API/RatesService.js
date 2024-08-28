@@ -9,9 +9,9 @@ export default class ApiRates {
             console.log(e)
         }
     }
-    static async getPreciousMetalls() {
+    static async getPreciousMetals() {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/v1/rates/')
+            const response = await axios.get('http://127.0.0.1:8000/api/v1/metals/')
             return response.data
         } catch (e) {
             console.log(e)

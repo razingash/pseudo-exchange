@@ -1,11 +1,13 @@
 import React from 'react';
 import "../styles/main_page.css"
-import RatesTable from "../components/UI/ratesTable/ratesTable";
+import CurrencyRatesTable from "../components/UI/CurrencyRatesTable/currencyRatesTable";
+import MetalsRatesTable from "../components/UI/MetalsRatesTable/metalsRatesTable";
 
 const Main = () => {
     return (
         <div className={"section__trads"}>
-            <RatesTable/>
+            <CurrencyRatesTable/>
+            <MetalsRatesTable/>
         </div>
     );
 };

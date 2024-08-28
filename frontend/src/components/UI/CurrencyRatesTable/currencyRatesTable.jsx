@@ -3,7 +3,7 @@ import ApiRates from "../../../API/RatesService";
 import {useFetching} from "../../../hooks/useFetching";
 import "./ratesTable.css"
 
-const RatesTable = () => {
+const CurrencyRatesTable = () => {
     const [rates, setRates] = useState([]);
     const [fetchRates] = useFetching(async () => {
         const response = await ApiRates.getCurrenciesRates();
@@ -21,12 +21,12 @@ const RatesTable = () => {
         void fetchRates();
     }, [])
     const rateEntries = Object.values(rates);
-    const firstDate = rateEntries.length > 0 ? rateEntries[0].date : 'No measurement date available';
-
+    const measurementDate = rateEntries.length > 0 ? rateEntries[0].date : 'No measurement date available';
+    console.log(rateEntries)
     return (
         <div className={"section__rates"}>
             <div className={"area__rates"}>
-                <div className={"rate__info"}>{firstDate}</div>
+                <div className={"rate__info"}>{measurementDate}</div>
                 <div className={"table__rates"}>
                     {columns.map((column) => (
                     <div className={"rates__column"} key={column.id}>
@@ -44,4 +44,4 @@ const RatesTable = () => {
     );
 };
 
-export default RatesTable;
+export default CurrencyRatesTable;

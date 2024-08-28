@@ -1,0 +1,95 @@
+
+.loading__field {
+
+}
+
+.loading {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading__arrow {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    margin: -30px;
+    z-index: -1;
+}
+
+.loading__arrow:before {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+}
+
+.loading__mark {
+    display: flex;
+    justify-content: center;
+    margin-top: 45px;
+    letter-spacing: 2px;
+    font-family: ui-sans-serif;
+    font-size: 1.5em;
+    cursor: default;
+}
+
+.loading .loading__arrow:nth-child(1) {
+    border-top: 4px solid #14ff00;
+    animation: rotate 4s linear infinite;
+    animation-delay: -3s;
+}
+.loading .loading__arrow:nth-child(1):before {
+    background: #14ff00;
+    box-shadow: 0 0 0 5px rgba(20, 255, 0, 0.6),
+                0 0 0 10px rgba(20, 255, 0, 0.4),
+                0 0 20px #14ff00,
+                0 0 50px #14ff00;
+}
+
+.loading .loading__arrow:nth-child(2) {
+    border-top: 4px solid #00fffd;
+    animation: rotate 4s linear infinite;
+    animation-delay: -1s;
+}
+.loading .loading__arrow:nth-child(2):before {
+    background: #00fffd;
+    box-shadow: 0 0 0 5px rgba(0, 255, 253, 0.6),
+                0 0 0 10px rgba(0, 255, 253, 0.4),
+                0 0 20px #00fffd,
+                0 0 50px #00fffd;
+}
+
+.loading .loading__arrow:nth-child(3) {
+    position: absolute;
+    top: -50px;
+    border-top: 4px solid #d000ff;
+    animation: reversed-rotate 4s linear infinite;
+    animation-delay: -2s; /*with -1 probably looks cooler*/
+}
+.loading .loading__arrow:nth-child(3):before {
+    left: 12px;
+    background: #d000ff;
+    box-shadow: 0 0 0 5px rgba(208, 0, 255, 0.6),
+                0 0 0 10px rgba(208, 0, 255, 0.4),
+                0 0 20px #d000ff,
+                0 0 50px #d000ff;
+}
+
+
+@keyframes rotate {
+    100% {
+        transform:rotate(360deg);
+    }
+}
+@keyframes reversed-rotate {
+    100% {
+        transform:rotate(-360deg);
+    }
+}
