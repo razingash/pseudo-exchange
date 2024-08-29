@@ -22,7 +22,6 @@ const CurrencyRatesTable = () => {
     }, [])
     const rateEntries = Object.values(rates);
     const measurementDate = rateEntries.length > 0 ? rateEntries[0].date : 'No measurement date available';
-    console.log(rateEntries)
     return (
         <div className={"section__rates"}>
             <div className={"area__rates"}>
@@ -33,7 +32,7 @@ const CurrencyRatesTable = () => {
                         <div className={"rates__header"} key={column.title}>{column.title}</div>
                         <div className={"rates__data"}>
                             {rateEntries.map(rate => (
-                            <div className={"rates__data__item"} key={rate.id}>{rate[column.id]}</div>
+                            <div className={"rates__data__item"} key={rate[column.id]}>{rate[column.id]}</div>
                             ))}
                         </div>
                     </div>

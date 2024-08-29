@@ -16,8 +16,11 @@
     padding: 10px;
 }
 .field__exit {
-    cursor: pointer;
+    display: flex;
     direction: rtl;
+}
+.exit-mark {
+    cursor: pointer;
 }
 .form__auth {
     display: flex;
@@ -51,7 +54,21 @@
 .form__auth__submit {
     width: fit-content;
     padding: 2px 10px;
+    /* padding: 4px 10px; */
+    border: 0;
+    border-radius: 5px;
+    /* background: #4676D7; */
+    font-size: 16px;
+    cursor: pointer;
 }
+.form__auth__submit:hover {
+    background: #4676d7;
+}
+.form__auth__submit:focus {
+    background: var(--selected-item);
+    box-shadow: 0 0 10px var(--selected-item);
+}
+
 .auth__change {
     cursor: pointer;
     width: fit-content;

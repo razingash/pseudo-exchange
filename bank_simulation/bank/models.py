@@ -63,9 +63,6 @@ class AccountAuthInfo(AbstractUser):
 
     class Meta:
         db_table = 'dt_AccountAuthInfo'
-        constraints = [
-            UniqueConstraint(fields=['username'], name='unique_customuser_username')
-        ]
 
 
 class Account(models.Model):

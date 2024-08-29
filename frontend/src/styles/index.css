@@ -62,3 +62,32 @@ body {
     border: 1px solid var(--selected-item);
     padding: 3px 7px;
 }
+
+/*notifications*/
+.notifications__list {
+    position: absolute;
+    margin: 20px 40px;
+    max-width: 400px;
+    width: 400px;
+    bottom: 0;
+    right: 0;
+}
+.notification__field {
+    margin: 0 0 20px 0;
+    background: #252537;
+    border-color: #00fffd;
+    border-radius: 6px;
+    border-width: 1px;
+    border-style: solid;
+    padding: 9px;
+    z-index: 2;
+}
+.notification__content {
+    position: relative;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+    overflow-y: hidden;
+    color: #fff;
+}

@@ -18,7 +18,7 @@ const MetalsRatesTable = () => {
     }, [])
 
     const measurementDate = metals && metals.length > 0 ?
-        new Date(metals.at(0).contents.at(-1).timestamp * 1000).toLocaleString() && console.log(123): "Loading";
+        new Date(metals.at(0).contents.at(-1).timestamp * 1000).toLocaleString(): "Loading";
     const metalsLatestPrices = metals.map(e => (
         {"code": e.code, "name": e.name, "cost": e.contents.at(-1).cost}
     ))
@@ -28,7 +28,6 @@ const MetalsRatesTable = () => {
             [new Date(timestamp * 1000).toLocaleDateString()]: cost
         }))
     }));*/
-    console.log(metalsLatestPrices)
     return (
         <div className={"section__rates"}>
             <div className={"area__rates"}>
@@ -39,7 +38,7 @@ const MetalsRatesTable = () => {
                         <div className={"rates__header"} key={column.title}>{column.title}</div>
                         <div className={"rates__data"}>
                             {metalsLatestPrices.map(rate => (
-                            <div className={"rates__data__item"} key={rate.id}>{rate[column.id]}</div>
+                            <div className={"rates__data__item"} key={rate[column.id]}>{rate[column.id]}</div>
                             ))}
                         </div>
                     </div>
@@ -51,3 +50,8 @@ const MetalsRatesTable = () => {
 };
 
 export default MetalsRatesTable;
+/*
+добавить авторизацию
+добавить инфу об аккаунте - кредиты, история переводов и конвертаций валюты, ежемесячный отлет
+добавить страницу с инфой об акциях(починить залупное сохранение акции - чтобы после обновления цены акции не было перезаписи)
+ */

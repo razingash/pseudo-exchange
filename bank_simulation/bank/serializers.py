@@ -17,13 +17,18 @@ class RegistrationSerializer(serializers.ModelSerializer):
         validate_password(value, self.instance)
         return value
 
+    def validate_username(self, value):
+        if len(value) < 5:
+            raise serializers.ValidationError("username field must contain at least 5 symbols")
+        return value
+
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
         return super().create(validated_data)
 
     class Meta:
         model = AccountAuthInfo
-        fields = ('username', 'password', 'uuid') # there was pin
+        fields = ('username', 'password', 'uuid')
 
 
 class GetUuidSerializer(serializers.ModelSerializer):
