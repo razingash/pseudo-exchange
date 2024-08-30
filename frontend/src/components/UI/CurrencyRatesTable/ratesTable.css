@@ -1,10 +1,11 @@
 .section__rates {
-
+    overflow-y: auto;
 }
 .area__rates {
     background: #000;
     padding: 10px;
     border: 2px solid var(--line-color);
+    overflow-y: auto;
 }
 .rate__info {
     display: flex;

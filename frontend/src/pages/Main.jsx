@@ -6,7 +6,7 @@ import MetalsRatesTable from "../components/UI/MetalsRatesTable/metalsRatesTable
 
 const Main = () => {
     return (
-        <div className={"section__trads"}>
+        <div className={"section__main"}>
             <CurrencyRatesTable/>
             <MetalsRatesTable/>
         </div>

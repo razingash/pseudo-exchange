@@ -56,6 +56,7 @@ body {
     color: #fff;
     cursor: pointer;
     padding: 4px 8px;
+    text-decoration: none;
 }
 .header__sitename__field:hover , .header__auth__field:hover  {
     color: var(--selected-item);

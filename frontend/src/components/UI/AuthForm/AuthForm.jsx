@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import "./AuthForm.css"
 import {useAuth} from "../../../context/useAuth";
-import ApiAuth from "../../../API/AuthService";
+import AuthService from "../../../API/AuthService";
 import {useNotifications} from "../../../context/useNotifications";
 
 const AuthForm = ({onClose}) => {
@@ -14,7 +14,7 @@ const AuthForm = ({onClose}) => {
     const registerUser = async (e) => {
         e.preventDefault()
         try{
-            const data = await ApiAuth.register(username, password);
+            const data = await AuthService.register(username, password);
             if (data === 400) {
                 addNotification(`bad request: ${data}`);
             } else {

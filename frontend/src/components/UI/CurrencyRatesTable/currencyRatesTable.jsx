@@ -24,7 +24,7 @@ const CurrencyRatesTable = () => {
     const measurementDate = rateEntries.length > 0 ? rateEntries[0].date : 'No measurement date available';
     return (
         <div className={"section__rates"}>
-            <div className={"area__rates"}>
+            <div className={"area__rates rates__currencies"}>
                 <div className={"rate__info"}>{measurementDate}</div>
                 <div className={"table__rates"}>
                     {columns.map((column) => (

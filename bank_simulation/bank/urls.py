@@ -1,9 +1,13 @@
-from django.urls import path, include
+from django.urls import path
+from djoser.views import UserViewSet
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from .views import *
 
 urlpatterns = [
-    path('v1/registration/', include('djoser.urls')), # post
-    path('v1/auth/', include('djoser.urls.authtoken')), # post( login and logout )
+    path('v1/registration/', UserViewSet.as_view({'post': 'create'}), name='registrer'), # post
+    path('v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('v1/account/<str:account_uuid>/', AccountApiView.as_view(), name='account'), # get
     path('v1/wallets/<str:account_uuid>/', ForeignCurrencyWalletApi.as_view(), name='wallets'), # get | post
     path('v1/transfers/<str:account_uuid>/', TransferApi.as_view(), name='transfer'), # get | post

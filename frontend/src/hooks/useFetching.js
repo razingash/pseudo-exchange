@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 // later make general fetching controller mb using observer
-// also improve errorizer - Should I make custom errors associated with long-time queries appear at the bottom?
+//now it should be used for requests with a large container area because for now it only has an effect for large loads
+
 export const useFetching = (callback) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
