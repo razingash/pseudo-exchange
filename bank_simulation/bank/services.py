@@ -109,9 +109,9 @@ def get_metals_json():
     return metals
 
 
-def get_asset_story(asset_id):
+def get_asset_story(asset_ticker):
     try:
-        asset_path = Assets.objects.get(id=asset_id).data
+        asset_path = Assets.objects.get(ticker=asset_ticker).data
     except ObjectDoesNotExist:
         raise CustomException("asset not found")
     else:

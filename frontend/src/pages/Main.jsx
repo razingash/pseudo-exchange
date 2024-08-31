@@ -1,5 +1,4 @@
 import React from 'react';
-import "../styles/main_page.css"
 import CurrencyRatesTable from "../components/UI/CurrencyRatesTable/currencyRatesTable";
 import MetalsRatesTable from "../components/UI/MetalsRatesTable/metalsRatesTable";
 

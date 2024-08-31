@@ -154,8 +154,8 @@ class AccountAssetsApi(APIView):
 
 class AssetStoryApi(APIView):
     @custom_exception
-    def get(self, request, asset_id):
-        asset_story = get_asset_story(asset_id)
+    def get(self, request, asset_ticker):
+        asset_story = get_asset_story(asset_ticker)
         return JsonResponse(asset_story)
 
 

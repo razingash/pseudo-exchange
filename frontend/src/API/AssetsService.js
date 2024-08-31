@@ -9,9 +9,9 @@ export default class AssetsService {
             console.log(e)
         }
     }
-    static async getAsset(asset_id) {
+    static async getAsset(asset_param) {
         try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/v1/asset-story/${asset_id}/`)
+            const response = await axios.get(`http://127.0.0.1:8000/api/v1/asset-story/${asset_param}/`)
             return response.data
         } catch (e) {
             console.log(e)
