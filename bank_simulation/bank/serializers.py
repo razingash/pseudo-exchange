@@ -185,4 +185,4 @@ class AccountAssetsSerializer(serializers.ModelSerializer):
 class AssetsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assets
-        fields = ('ticker', 'name', 'cost', 'currency_type', 'dividends', 'measurement_date')
+        fields = ('ticker', 'name', 'cost', 'currency_type', 'dividends', 'timestamp')

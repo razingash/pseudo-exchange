@@ -153,8 +153,6 @@ class AccountAssetsApi(APIView):
         return Response(AccountAssetsSerializer(user_assets, many=True).data)
 
 class AssetStoryApi(APIView):
-    permission_classes = (IsAuthenticated, )
-
     @custom_exception
     def get(self, request, asset_id):
         asset_story = get_asset_story(asset_id)

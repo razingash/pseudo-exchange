@@ -160,7 +160,7 @@ def create_new_wallet(account_uuid, currency):
 def create_conversion(account_uuid, amount, starting_currency, final_currency):
     account_id = get_user_id(account_uuid)
     amount = int(amount)
-    rate = RateList.objects.only('id').latest('measurement_date').id
+    rate = RateList.objects.only('id').latest('timestamp').id
     if starting_currency != "USD":
         if not check_user_wallet(account_id, starting_currency):
             raise CustomException(f"you don't have a wallet with s {starting_currency} currency")

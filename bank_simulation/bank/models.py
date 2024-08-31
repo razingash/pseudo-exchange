@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from datetime import datetime
 from uuid import uuid4
 
@@ -248,7 +249,7 @@ class Assets(models.Model):
     currency_type = models.CharField(choices=Currencies.choices, default=Currencies.EUR, max_length=3,
                                      blank=False, null=False)
     dividends = models.PositiveSmallIntegerField(default=2, blank=False, null=False)
-    measurement_date = models.DateTimeField(auto_now=True, blank=False, null=False)
+    timestamp = models.BigIntegerField(blank=False, null=False, default=int(time.time()))
     data = models.FilePathField(blank=True, null=True, path=os.path.join(settings.MEDIA_ROOT, 'assets'),
                                 allow_files=True, match='.*\.json$')
 
@@ -261,6 +262,7 @@ def create_json_template_for_assets(sender, instance, created, **kwargs):
         settings.MEDIA_ROOT, 'assets', f"{instance.ticker}.json"
     )
     if created:
+        os.makedirs(os.path.dirname(json_path), exist_ok=True)
         json_schema = {
             "ticker": instance.ticker,
             "name": instance.name,
@@ -279,7 +281,7 @@ def create_json_template_for_assets(sender, instance, created, **kwargs):
             json_data = json.load(json_file)
 
         json_data["contents"].append({
-            "measurement_date": str(instance.measurement_date),
+            "timestamp": str(instance.timestamp),
             "cost": instance.cost
         })
 
