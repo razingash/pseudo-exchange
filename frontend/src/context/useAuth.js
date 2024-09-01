@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
             tokensRef.current = {access: data.access, refresh: data.refresh};
             return data.access
         } catch (e) {
-            console.log(e);
+            console.error("Token refreshing failed:", e);
             logout();
         }
     }

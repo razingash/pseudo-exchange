@@ -3,17 +3,33 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 40px;
+    width: 695px;
 }
 .area__asset {
     padding: 15px;
-    border: 1px solid #ffff00;
+    border: 2px solid #0600ffd4;
     border-radius: 4px;
     background: #000;
-    width: 200px;
+    width: 205px;
     cursor: pointer;
 }
 .area__asset:hover {
     border-color: var(--selected-item);
+}
+.asset__name {
+    z-index: 2;
+}
+.asset__name:hover > div:first-child {
+    display: none;
+}
+.asset__name:hover > div:last-child {
+    display: block;
+}
+.asset__name > div:first-child{
+    display: block;
+}
+.asset__name > div:last-child {
+    display: none;
 }
 .asset__column {
     display: flex;

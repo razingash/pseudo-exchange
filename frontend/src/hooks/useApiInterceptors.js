@@ -8,16 +8,16 @@ const apiClient = axios.create({
     }
 })
 
-export const UseApiInterceptors = () => {
+export const useApiInterceptors = () => {
     const authContext = useAuth();
 
     if (!authContext) return;
 
-    const { logout } = authContext;
+    const { logout, tokensRef, refreshAccessToken } = authContext;
 
     apiClient.interceptors.request.use((config) => {
-        if (localStorage.getItem('token')) {
-            config.headers.Authorization = `Token ${localStorage.getItem('token')}`;
+        if (tokensRef?.access) {
+            config.headers.Authorization = `Token ${tokensRef.access}`;
         }
         return config;
     }, (error) => {
@@ -32,9 +32,10 @@ export const UseApiInterceptors = () => {
             if (error.response.status === 401 &&  error.config && !error.config._retry) {
                 originalRequest._retry = true;
                 try {
-                    apiClient.defaults.headers.common.Authorization = `Token ${localStorage.getItem('token')}`;
-                    originalRequest.headers.Authorization = `Token ${localStorage.getItem('token')}`;
-                    await console.log('change this')
+                    const accessToken = await refreshAccessToken();
+                    console.log(accessToken)
+                    apiClient.defaults.headers.common.Authorization = `Token ${accessToken}`;
+                    originalRequest.headers.Authorization = `Token ${accessToken}`;
                     return apiClient(originalRequest);
                 } catch (e) {
                     console.log(`InterceptorResponseError: ${e}`)

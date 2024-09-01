@@ -3,7 +3,7 @@ import axios from "axios";
 export default class AuthService {
     static async register(username, password) {
         try {
-            const response =  await axios.post('http://127.0.0.1:8000/api/v1/registration/users/', {username, password});
+            const response =  await axios.post('http://127.0.0.1:8000/api/v1/registration/', {username, password});
             return response.data;
         } catch (e) {
             console.log(e)
@@ -26,9 +26,9 @@ export default class AuthService {
             console.log(e)
         }
     }
-    static async refreshAccessToken(username, password) {
+    static async refreshAccessToken(token) {
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/v1/token/refresh/', {username, password});
+            const response = await axios.post('http://127.0.0.1:8000/api/v1/token/refresh/', {refresh: token});
             return response.data;
         } catch (e) {
             console.log(e)

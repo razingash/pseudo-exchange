@@ -17,7 +17,7 @@ const AuthForm = ({onClose}) => {
             const data = await AuthService.register(username, password);
             if (data === 400) {
                 addNotification(`bad request: ${data}`);
-            } else {
+            } else if (data){
                 addNotification(`User ${username} successfully registered`)
                 await login(username, password); // autologin
                 const userUuid = data.uuid

@@ -1,0 +1,21 @@
+.field__wallets {
+    display: flex;
+    background: #26292d;
+    padding: 20px;
+    width: fit-content;
+    border: 1px solid;
+    border-radius: 5px;
+    gap: 20px;
+    overflow-y: auto;
+}
+.wallet__item {
+    padding: 10px;
+    border: 1px solid;
+    background: #000;
+}
+.wallet__balance {
+
+}
+.wallet__currency {
+
+}

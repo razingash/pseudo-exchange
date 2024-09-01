@@ -22,8 +22,8 @@ const Assets = () => {
                 {assets && assets.map(stock => (
                     <div className={"area__asset"} onClick={() => router(`/assets/${stock.ticker}/`)} key={stock.ticker}>
                         <div className={"asset__name"}>
-                            <div>{stock.ticker}</div>
                             <div>{stock.name}</div>
+                            <div>{stock.ticker}</div>
                         </div>
                         <div className={"asset__data"}>
                             <div className={"asset__column"}>

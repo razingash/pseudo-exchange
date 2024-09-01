@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-// later make general fetching controller mb using observer
 //now it should be used for requests with a large container area because for now it only has an effect for large loads
 
 export const useFetching = (callback) => {
