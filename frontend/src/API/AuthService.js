@@ -18,12 +18,13 @@ export default class AuthService {
             console.log(e)
         }
     }
-    static async verifyAccessToken(token) {
+    static async verifyToken(token) { // both access and refresh
         try {
             const response = await axios.post('http://127.0.0.1:8000/api/v1/token/verify/', {token: token})
             return response.data
         } catch (e) {
             console.log(e)
+            return e.status
         }
     }
     static async refreshAccessToken(token) {

@@ -4,14 +4,17 @@ import {privateRotes, publicRotes} from "../rotes/urls";
 import {useAuth} from "../context/useAuth";
 
 const AppRouter = () => {
-    const {isAuth, setIsAuth, refreshAccessToken} = useAuth();
+    const {isAuth, setIsAuth, refreshAccessToken, validateRefreshToken} = useAuth();
     useEffect(() => {
         const checkToken = async () => {
-            const refreshToken = localStorage.getItem('token')
-            if (refreshToken) {
+            console.log( await validateRefreshToken)
+            if ( validateRefreshToken === true ) {
+                setIsAuth(true);
                 await refreshAccessToken
+            } else {
+                setIsAuth(false)
             }
-            setIsAuth(true);
+            console.log(isAuth)
         }
         void checkToken();
     }, [])

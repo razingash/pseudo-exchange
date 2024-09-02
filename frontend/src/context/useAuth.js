@@ -35,18 +35,36 @@ export const AuthProvider = ({ children }) => {
 
     const refreshAccessToken = async () => {
         try {
-            const refreshToken = localStorage.getItem('token')
-            const data = await AuthService.refreshAccessToken(refreshToken)
-            tokensRef.current = {access: data.access, refresh: data.refresh};
-            return data.access
+            const isValid = await validateRefreshToken();
+            if ( isValid === true ) {
+                const refreshToken = localStorage.getItem('token')
+                const data = await AuthService.refreshAccessToken(refreshToken)
+                tokensRef.current = {access: data.access, refresh: data.refresh};
+                return data.access
+            }
         } catch (e) {
             console.error("Token refreshing failed:", e);
             logout();
         }
     }
 
+    const validateRefreshToken = async () => {
+        try {
+            const refreshToken = localStorage.getItem('token')
+            const isTokenValid = await AuthService.verifyToken(refreshToken);
+            console.log(isTokenValid)
+            if (isTokenValid === 401) {
+                console.log('logout')
+                logout();
+            }
+            return true
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     return (
-        <AuthContext.Provider value={{isAuth, setIsAuth, tokensRef, login, logout, refreshAccessToken}}>
+        <AuthContext.Provider value={{isAuth, setIsAuth, tokensRef, login, logout, refreshAccessToken, validateRefreshToken}}>
             { children }
         </AuthContext.Provider>
     );
