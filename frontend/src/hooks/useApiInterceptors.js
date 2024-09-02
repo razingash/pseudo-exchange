@@ -33,13 +33,12 @@ export const useApiInterceptors = () => {
                 originalRequest._retry = true;
                 try {
                     const accessToken = await refreshAccessToken();
-                    console.log(accessToken)
                     apiClient.defaults.headers.common.Authorization = `Token ${accessToken}`;
                     originalRequest.headers.Authorization = `Token ${accessToken}`;
                     return apiClient(originalRequest);
                 } catch (e) {
                     console.log(`InterceptorResponseError: ${e}`)
-                    logout()
+                    await logout();
                 }
             }
             throw error;

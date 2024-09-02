@@ -40,7 +40,7 @@ const UserWallets = () => {
                 <div className={"wallet__balance"}>{mainWallet ? mainWallet.balance : 'Loading...'}</div>
             </div>
             {wallets.map(wallet => (
-                <div className={"wallet__item"}>
+                <div className={"wallet__item"} key={wallet.currency}>
                     <div className={"wallet__currency"}>{wallet.currency}</div>
                     <div className={"wallet__balance"}>{wallet.balance}</div>
                 </div>

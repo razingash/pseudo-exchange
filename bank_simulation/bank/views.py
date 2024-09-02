@@ -1,7 +1,10 @@
 from django.http import JsonResponse
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from bank.models import ForeignCurrencyWallet, Conversion, InvestmentTransaction, AccountAsset, Credit, Assets
 from bank.serializers import AccountSerializer, TransferSerializer, CreditSerializer, ConversionSerializer, \
@@ -10,6 +13,26 @@ from bank.serializers import AccountSerializer, TransferSerializer, CreditSerial
 from bank.services import get_user_transfers, update_pay_credit_early, get_currencies_rates_json, create_conversion, \
     create_new_wallet, get_account_info, create_new_transaction, get_asset_story, custom_exception, \
     get_objects_by_uuid, get_objects_list, get_metals_json
+
+
+class LogoutView(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def post(self, request):
+        try:
+            refresh_token = request.data['refresh_token']
+            token = RefreshToken(refresh_token)
+
+            if token.payload['user_id'] != request.user.id:
+                return Response({"INFO": "Invalid token, clown"}, status=status.HTTP_403_FORBIDDEN)
+
+            token.blacklist()
+
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except (TokenError, InvalidToken):
+            return Response(status=status.HTTP_408_REQUEST_TIMEOUT)
+        except KeyError:
+            return Response({"detail": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AccountApiView(APIView):

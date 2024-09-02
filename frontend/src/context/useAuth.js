@@ -26,38 +26,56 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
-    const logout = () => {
-        /*const token = localStorage.getItem('token')
-        await ApiAuth.logout(token)*/
-        setIsAuth(false);
-        localStorage.removeItem('token')
+    const logout = async () => {
+        try {
+            const refreshToken = localStorage.getItem('token')
+            if (!refreshToken) {
+                setIsAuth(false);
+            } else {
+                await AuthService.logout(refreshToken);
+                localStorage.removeItem('token')
+                setIsAuth(false);
+            }
+        } catch (e) {
+            console.log("error")
+        }
     };
 
     const refreshAccessToken = async () => {
         try {
             const isValid = await validateRefreshToken();
-            if ( isValid === true ) {
-                const refreshToken = localStorage.getItem('token')
+            const refreshToken = localStorage.getItem('token')
+            if (!refreshToken) {
+                await logout();
+            }
+            else if ( isValid === true ) {
                 const data = await AuthService.refreshAccessToken(refreshToken)
                 tokensRef.current = {access: data.access, refresh: data.refresh};
+                setIsAuth(true);
                 return data.access
+            } else {
+                await logout();
             }
         } catch (e) {
             console.error("Token refreshing failed:", e);
-            logout();
+            await logout();
         }
     }
 
     const validateRefreshToken = async () => {
         try {
             const refreshToken = localStorage.getItem('token')
-            const isTokenValid = await AuthService.verifyToken(refreshToken);
-            console.log(isTokenValid)
-            if (isTokenValid === 401) {
-                console.log('logout')
-                logout();
+            if (refreshToken) {
+                const isTokenValid = await AuthService.verifyToken(refreshToken);
+                if (isTokenValid === 401) {
+                    await logout();
+                    return false
+                }
+                return true
+            } else {
+                await logout();
+                return false
             }
-            return true
         } catch (e) {
             console.log(e)
         }

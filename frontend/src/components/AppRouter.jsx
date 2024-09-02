@@ -1,23 +1,26 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Navigate, Route, Routes} from "react-router-dom";
 import {privateRotes, publicRotes} from "../rotes/urls";
 import {useAuth} from "../context/useAuth";
 
 const AppRouter = () => {
-    const {isAuth, setIsAuth, refreshAccessToken, validateRefreshToken} = useAuth();
+    const {isAuth, refreshAccessToken, validateRefreshToken} = useAuth();
+    const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
         const checkToken = async () => {
-            console.log( await validateRefreshToken)
-            if ( validateRefreshToken === true ) {
-                setIsAuth(true);
-                await refreshAccessToken
-            } else {
-                setIsAuth(false)
+            const isValidToken = await validateRefreshToken();
+            if ( isValidToken === true ) {
+                await refreshAccessToken();
             }
-            console.log(isAuth)
+            setIsLoading(false);
         }
         void checkToken();
-    }, [])
+    }, [validateRefreshToken, refreshAccessToken])
+
+    if (isLoading) {
+        return <></>;
+    }
 
     return (
         <Routes>
