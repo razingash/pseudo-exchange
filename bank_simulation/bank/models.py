@@ -75,6 +75,17 @@ class Account(models.Model):
     balance = models.DecimalField(default=150000, max_digits=16, decimal_places=2, blank=False, null=False)
     status = models.CharField(max_length=1, choices=UserStatusChoices.choices,
                               default=UserStatusChoices.FREE, verbose_name='account status')
+    account_number = models.CharField(max_length=50, unique=True, blank=False, null=False)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            latest_acc = Account.objects.order_by('-id').first()
+            if latest_acc:
+                latest_acc = int(latest_acc.account_number)
+                self.account_number = str(latest_acc + 1)
+            else:
+                self.account_number = 1_000_000_000_000_000
+        super(Account, self).save(*args, **kwargs)
 
     class Meta:
         db_table = 'dt_Account'

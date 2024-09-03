@@ -26,5 +26,4 @@ class Command(BaseCommand):
 
         for asset in assets:
             Assets.objects.create(ticker=asset.get("ticker"), name=asset.get("name"))
-        self.stdout.write(self.style.SUCCESS('Succesfully'), ' created basic assets')
-
+        self.stdout.write(self.style.SUCCESS('Succesfully') + ' created basic assets')

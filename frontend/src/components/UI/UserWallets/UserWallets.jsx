@@ -1,19 +1,21 @@
 import React, {useEffect, useState} from 'react';
 import "./UserWallets.css";
 import {useFetching} from "../../../hooks/useFetching";
-import AccountService from "../../../API/AccountService";
 import {useApiInterceptors} from "../../../hooks/useApiInterceptors";
+import AccountService from "../../../API/UserRelatedServices/AccountService";
+
+//figure out what to do with uuid
 
 const UserWallets = () => {
     useApiInterceptors();
     const [mainWallet, setMainWallet] = useState();
     const [wallets, setWallets] = useState([]);
     const [fetchMainWallet] = useFetching(async () => {
-        const response = await AccountService.getAccountInfo('ee5aec0d30614ea4ad5c98e49178694b')
+        const response = await AccountService.getAccountInfo('95a0fa45758847898703224e798e324b')
         setMainWallet(response)
     })
     const [fetchWallets] = useFetching(async () => {
-        const response = await AccountService.getAdditionalWallets('ee5aec0d30614ea4ad5c98e49178694b')
+        const response = await AccountService.getAdditionalWallets('95a0fa45758847898703224e798e324b')
         setWallets(response)
     })
     const currencies = [

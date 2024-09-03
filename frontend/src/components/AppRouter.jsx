@@ -2,9 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {Navigate, Route, Routes} from "react-router-dom";
 import {privateRotes, publicRotes} from "../rotes/urls";
 import {useAuth} from "../context/useAuth";
+import AccountService from "../API/UserRelatedServices/AccountService";
 
 const AppRouter = () => {
-    const {isAuth, refreshAccessToken, validateRefreshToken} = useAuth();
+    const {isAuth, setUuid, refreshAccessToken, validateRefreshToken} = useAuth();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -15,7 +16,17 @@ const AppRouter = () => {
             }
             setIsLoading(false);
         }
+         const getUserUuid = async () => {
+            try {
+                const response = await AccountService.getUserUuid();
+                console.log(response.uuid)
+                setUuid(response.uuid)
+            } catch (e) {
+                console.log(e)
+            }
+        }
         void checkToken();
+        isAuth && void getUserUuid();
     }, [validateRefreshToken, refreshAccessToken])
 
     if (isLoading) {

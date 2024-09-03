@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from rest_framework import status
+from rest_framework.authentication import get_authorization_header
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,11 +9,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from bank.models import ForeignCurrencyWallet, Conversion, InvestmentTransaction, AccountAsset, Credit, Assets
 from bank.serializers import AccountSerializer, TransferSerializer, CreditSerializer, ConversionSerializer, \
-    ConversionGetSerializer, ForeignCurrencyWalletSerializer, ForeignCurrencyWalletsSerializer,\
-    AccountTransactionsSerializer, AccountAssetsSerializer, AssetsListSerializer
+    ConversionGetSerializer, ForeignCurrencyWalletSerializer, ForeignCurrencyWalletsSerializer, \
+    AccountTransactionsSerializer, AccountAssetsSerializer, AssetsListSerializer, GetUuidSerializer
 from bank.services import get_user_transfers, update_pay_credit_early, get_currencies_rates_json, create_conversion, \
     create_new_wallet, get_account_info, create_new_transaction, get_asset_story, custom_exception, \
-    get_objects_by_uuid, get_objects_list, get_metals_json
+    get_objects_by_uuid, get_objects_list, get_metals_json, get_user_uuid
 
 
 class LogoutView(APIView):
@@ -33,6 +34,16 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_408_REQUEST_TIMEOUT)
         except KeyError:
             return Response({"detail": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetUserUuidApi(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    @custom_exception
+    def get(self, request):  # get current account uuid
+        key = get_authorization_header(request).decode('utf-8').split()[1]
+        uuid = get_user_uuid(key)
+        return Response(GetUuidSerializer(uuid, many=False).data)
 
 
 class AccountApiView(APIView):
@@ -71,9 +82,10 @@ class TransferApi(APIView):
 
     @custom_exception
     def post(self, request, account_uuid):
-        request.data['sender'] = account_uuid
+        data = request.data.copy()
+        data['sender'] = account_uuid
 
-        serializer = TransferSerializer(data=request.data)
+        serializer = TransferSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 

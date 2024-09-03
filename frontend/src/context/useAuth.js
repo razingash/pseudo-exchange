@@ -9,6 +9,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [isAuth, setIsAuth] = useState(false);
+    const [uuid, setUuid] = useState(null);
     const tokensRef = useRef({access: null});
 
     const login = async (username, password) => {
@@ -82,7 +83,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{isAuth, setIsAuth, tokensRef, login, logout, refreshAccessToken, validateRefreshToken}}>
+        <AuthContext.Provider value={{isAuth, setIsAuth, tokensRef, uuid, setUuid,
+            login, logout, refreshAccessToken, validateRefreshToken}}>
             { children }
         </AuthContext.Provider>
     );

@@ -3,7 +3,11 @@ from decimal import Decimal
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from rest_framework.exceptions import APIException
 from rest_framework.response import Response
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import AccessToken
+
 from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, RateList, ForeignCurrencyWallet, \
     ConversionRate, InvestmentTransaction, AccountAsset, Assets, UserTransaction, ValuableMetalsList, Metals
 
@@ -43,6 +47,29 @@ def get_user_id(account_uuid):
     except ObjectDoesNotExist:
         raise CustomException("Account not found")
     return user_id
+
+
+def get_user_uuid(token_key):
+    try:
+        token = AccessToken(token_key)
+        user_id = token['user_id']
+
+        user_uuid = AccountAuthInfo.objects.only('uuid').get(id=user_id)
+    except TokenError:
+        raise APIException("Invalid token")
+    except ObjectDoesNotExist:
+        raise CustomException("Account not found")
+
+    return user_uuid
+
+def get_user_id_by_account_number(account_number):
+    try:
+        user_id = Account.objects.only('id', 'account_number',
+                                       'account_auth_info_id').get(account_number=account_number).account_auth_info_id
+    except ObjectDoesNotExist:
+        raise CustomException("Account not found")
+    return user_id
+
 
 def check_client_potential(user_id, amount):
     client_balance = int(Account.objects.only('balance').get(id=user_id).balance)

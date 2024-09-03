@@ -9,6 +9,7 @@ urlpatterns = [
     path('v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('v1/logout/', LogoutView.as_view(), name='logout'),
+    path('v1/get-uuid/', GetUserUuidApi.as_view(), name='user_uuid'), # get
     path('v1/account/<str:account_uuid>/', AccountApiView.as_view(), name='account'), # get
     path('v1/wallets/<str:account_uuid>/', ForeignCurrencyWalletApi.as_view(), name='wallets'), # get | post
     path('v1/transfers/<str:account_uuid>/', TransferApi.as_view(), name='transfer'), # get | post

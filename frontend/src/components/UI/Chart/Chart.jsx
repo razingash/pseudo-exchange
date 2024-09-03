@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import './Chart.css';
+import GlobalLoadingEffect from "../LoadingEffects/GlobalLoadingEffect";
 
 const Chart = ({ data }) => {
     const canvasRef = useRef(null);
@@ -150,6 +151,10 @@ const Chart = ({ data }) => {
             };
         }
     }, [data]);
+
+    if (!data) {
+        return (<GlobalLoadingEffect message={"Loading..."}/>)
+    }
 
     return (
         <div className="field__chart">

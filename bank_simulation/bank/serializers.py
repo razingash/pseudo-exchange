@@ -7,7 +7,7 @@ from rest_framework import serializers
 
 from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, ForeignCurrencyWallet, \
     AccountAsset, Assets, Currencies, TransactionTypes
-from bank.services import get_user_id, check_client_potential
+from bank.services import get_user_id, check_client_potential, get_user_id_by_account_number
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -61,7 +61,7 @@ class TransferSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         sender_id = get_user_id(validated_data['sender']['account_auth_info']['username'])
-        receiver_id = get_user_id(validated_data['receiver']['account_auth_info']['username'])
+        receiver_id = get_user_id_by_account_number(validated_data['receiver']['account_auth_info']['username'])
         amount = int(validated_data['amount'])
         client_potential = check_client_potential(user_id=sender_id, amount=amount)
         if client_potential:
@@ -82,8 +82,6 @@ class TransferSerializer(serializers.Serializer):
 
         if not sender and not receiver:
             raise serializers.ValidationError("'sender' and 'receiver' with uuid is required.")
-        if not sender:
-            raise serializers.ValidationError("'sender' with uuid is required.")
         if not receiver:
             raise serializers.ValidationError("'receiver' with uuid is required.")
         if sender == receiver:

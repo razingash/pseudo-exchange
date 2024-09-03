@@ -65,12 +65,16 @@ body {
 }
 
 .section__main{
-    color: white;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    color: white;
     gap: 20px;
     margin: 20px;
+}
+.section__main__list {
+    flex-direction: column;
+    align-items: center;
 }
 
 /*notifications*/

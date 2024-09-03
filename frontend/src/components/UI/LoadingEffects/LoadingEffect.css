@@ -1,6 +1,6 @@
 
 .loading__field {
-
+    padding: 95px 50px 10px 50px;
 }
 
 .loading {
@@ -31,13 +31,15 @@
 }
 
 .loading__mark {
-    display: flex;
+    display: inline-flex;
     justify-content: center;
     margin-top: 45px;
     letter-spacing: 2px;
     font-family: ui-sans-serif;
     font-size: 1.5em;
     cursor: default;
+    clip-path: inset(0 2ch 0 0);
+    animation: ghosty_ellipsis 4s steps(4) infinite;
 }
 
 .loading .loading__arrow:nth-child(1) {
@@ -82,6 +84,11 @@
                 0 0 50px #d000ff;
 }
 
+@keyframes ghosty_ellipsis {
+    to {
+        clip-path: inset(0 -1ch 0 0);
+    }
+}
 
 @keyframes rotate {
     100% {
