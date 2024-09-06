@@ -1,5 +1,6 @@
 .field__statistics {
     display: flex;
+    position: relative;
     flex-wrap: wrap;
 }
 .block__adapter {
@@ -14,9 +15,26 @@
 }
 .adapter__item {
     cursor: pointer;
+    position: relative;
 }
 .selected__item {
     color: var(--selected-item);
+    cursor: default;
+}
+.adapter__item__new {
+    display: none;
+    cursor: pointer;
+}
+.selected__adapter{
+    position: absolute;
+    display: block;
+    top: 1px;
+    left: -17px;
+    background: #000;
+    border-radius: 4px;
+    font-family: sans-serif;
+    padding: 0 3px;
+    color: #dc00ff;
 }
 
 
@@ -45,6 +63,7 @@
     border-radius: 5px;
     padding: 20px;
     margin-top: 20px;
+    width: min-content;
 }
 .content__item {
     display: flex;
@@ -58,4 +77,12 @@
     flex-direction: row;
     justify-content: space-between;
     flex-wrap: wrap;
+    cursor: default;
+}
+.content__item__row:hover {
+    color: var(--selected-item);
+}
+
+.opened {
+    border-color: var(--selected-item);
 }

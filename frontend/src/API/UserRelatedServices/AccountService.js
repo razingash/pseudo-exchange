@@ -25,12 +25,12 @@ export default class AccountService {
             console.log(e)
         }
     }
-    static async createNewWallet(userUuid) {
+    static async createNewWallet(userUuid, currency) {
         try {
-            const response = await apiClient.post(`http://127.0.0.1:8000/api/v1/wallets/${userUuid}/`)
+            const response = await apiClient.post(`http://127.0.0.1:8000/api/v1/wallets/${userUuid}/`, {currency:currency})
             return response.data
         } catch (e) {
-            console.log(e)
+            return e.status;
         }
     }
 }

@@ -1,5 +1,6 @@
 import {createContext, useContext, useRef, useState} from "react";
 import AuthService from "../API/AuthService";
+import AccountService from "../API/UserRelatedServices/AccountService";
 
 export const AuthContext = createContext(null);
 
@@ -12,6 +13,15 @@ export const AuthProvider = ({ children }) => {
     const [uuid, setUuid] = useState(null);
     const tokensRef = useRef({access: null});
 
+    const fetchUserUuid = async () => {
+        try {
+            const userUuid = await AccountService.getUserUuid();
+            setUuid(userUuid);
+        } catch (e) {
+            console.log('Failed to fetch uuid:', e);
+        }
+    }
+
     const login = async (username, password) => {
         try {
             const data = await AuthService.login(username, password);
@@ -22,6 +32,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', data.refresh)
             tokensRef.current = {access: data.access, refresh: data.refresh};
             setIsAuth(true);
+            await fetchUserUuid();
         } catch (e) {
             console.log('Login Error:', e)
         }
@@ -36,6 +47,7 @@ export const AuthProvider = ({ children }) => {
                 await AuthService.logout(refreshToken);
                 localStorage.removeItem('token')
                 setIsAuth(false);
+                setUuid(null);
             }
         } catch (e) {
             console.log("error")

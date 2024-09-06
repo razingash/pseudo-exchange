@@ -9,7 +9,7 @@ export default class CreditService {
             console.log(e)
         }
     }
-    static async createNewCredit(userUuid, token, creditType) {
+    static async createNewCredit(userUuid, creditType) {
         try {
             const response = await apiClient.post(`http://127.0.0.1:8000/api/v1/credits/${userUuid}/`, {credit_type: creditType})
             return response.data

@@ -15,13 +15,13 @@ const AuthForm = ({onClose}) => {
         e.preventDefault()
         try{
             const data = await AuthService.register(username, password);
-            if (data === 400) {
-                addNotification(`bad request: ${data}`);
-            } else if (data){
+            if (data === 200){
                 addNotification(`User ${username} successfully registered`)
                 await login(username, password); // autologin
                 const userUuid = data.uuid
                 console.log(userUuid)
+            } else if (data === 400) {
+                addNotification(`bad request: ${data}`);
             }
         } catch (e) {
             console.log(e)

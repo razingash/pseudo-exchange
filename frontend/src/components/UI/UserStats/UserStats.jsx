@@ -2,16 +2,21 @@ import React, {useState} from 'react';
 import Chart from "../Chart/Chart";
 import "./UserStats.css"
 import UserTransfers from "./UserTransfers";
-import {useAuth} from "../../../context/useAuth";
 import UserCredits from "./UserCredits";
+import NewTransferForm from "../Forms/NewTransferForm";
 
-const UserStats = () => {
-    const { uuid } = useAuth();
+const UserStats = ({props}) => {
     const [selectedAdapter, setSelectedAdapter] = useState(null);
+    const [activeForm, setActiveForm] = useState(null);
     const adapterItems = ["transfers", "credits", "conversions", "assets", "money journal?"];
 
     const handleAdapterClick = (index) => {
         setSelectedAdapter(index);
+    }
+
+    const handleNewFormClick = (index) => {
+        setActiveForm(index);
+        props.spawnNewForm();
     }
 
     const getContent = () => {
@@ -31,11 +36,31 @@ const UserStats = () => {
         }
     }
 
+    const getFormForAdapter = () => {
+        switch (activeForm) {
+            case 0:
+                return <NewTransferForm />;
+            /*case 1:
+                return <NewCreditForm />;
+            case 2:
+                return <NewConversionForm />;
+            case 3:
+                return <NewAssetForm />;
+            case 4:
+                return <NewJournalForm />;*/
+            default:
+                return null;
+        }
+    }
+
     return (
         <div className={"field__statistics"}>
             <div className={"block__adapter"}>
                 {adapterItems.map((item, index) => (
-                    <div className={`adapter__item ${selectedAdapter === index ? 'selected__item' : ''}`} onClick={() => handleAdapterClick(index)} key={item}>{item}</div>
+                    <div className={`adapter__item ${selectedAdapter === index ? 'selected__item' : ''}`} onClick={() => handleAdapterClick(index)} key={item}>
+                        <div>{item}</div>
+                        <div className={`adapter__item__new ${selectedAdapter === index ? 'selected__adapter' : ''}`} onClick={() => handleNewFormClick(index)}>+</div>
+                    </div>
                 ))}
             </div>
             <div className={"block__statistics"}>
@@ -47,6 +72,12 @@ const UserStats = () => {
             <div className={"block__content"}>
                 {getContent()}
             </div>
+            {props.isNewSelectedFormSpawned && props.activeFormType === 'stats' && (
+                <div className={"new__form__field"}>
+                    <div className={"new__form__field__exit"}><div onClick={props.removeNewSelectedForm} className={"exit-mark"}>&#x274c;</div></div>
+                    {getFormForAdapter()}
+                </div>
+            )}
         </div>
     );
 };

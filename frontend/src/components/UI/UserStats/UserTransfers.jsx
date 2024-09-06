@@ -18,7 +18,7 @@ const UserTransfers = () => {
     return (
         <>
             {transfers.length > 0 ? (transfers.map(transfer => (
-                <div className={"content__item"} key={transfer}>
+                <div className={"content__item"} key={transfer.time_stamp}>
                     <div className={"content__item__row"}>
                         <div className={""}>{transfer.sender}</div>
                         <div className={""}>{transfer.receiver}</div>
