@@ -28,7 +28,7 @@ const UserWallets = ({props}) => {
         } else {
             console.log('UUID is not defined');
         }
-    }, [uuid]) // если добавить wallets то тогда значение будет корректно обновлятся но будет бесконечная лента запросов
+    }, [uuid]) // если добавить
 
     return (
         <div className={"field__wallets"}>

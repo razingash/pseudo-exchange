@@ -1,5 +1,6 @@
 import axios from "axios";
 import {useAuth} from "../context/useAuth";
+import {useEffect} from "react";
 
 const apiClient = axios.create({
     baseURL: 'http://127.0.0.1:8000/api/v1',
@@ -9,42 +10,45 @@ const apiClient = axios.create({
 })
 
 export const useApiInterceptors = () => {
-    const authContext = useAuth();
+    const { tokensRef, refreshAccessToken, logout } = useAuth();
 
-    if (!authContext) return;
+    useEffect(() => {
+        if (!tokensRef.current) return;
 
-    const { logout, tokensRef, refreshAccessToken } = authContext;
-
-    apiClient.interceptors.request.use((config) => {
-        if (tokensRef?.access) {
-            config.headers.Authorization = `Token ${tokensRef.access}`;
-        }
-        return config;
-    }, (error) => {
-        return Promise.reject(error)
-    })
-
-    apiClient.interceptors.response.use(
-        (config) => {
-            return config;
-        }, async (error) => {
-            const originalRequest = error.config;
-            if (error.response.status === 401 &&  error.config && !error.config._retry) {
-                originalRequest._retry = true;
-                try {
-                    const accessToken = await refreshAccessToken();
-                    apiClient.defaults.headers.common.Authorization = `Token ${accessToken}`;
-                    originalRequest.headers.Authorization = `Token ${accessToken}`;
-                    return apiClient(originalRequest);
-                } catch (e) {
-                    console.log(`InterceptorResponseError: ${e}`)
-                    await logout();
+        const interceptorId = apiClient.interceptors.request.use(
+            (config) => {
+                if (tokensRef.current.access) {
+                    config.headers.Authorization = `Token ${tokensRef.current.access}`;
                 }
+                return config;
+            },
+            (error) => Promise.reject(error)
+        );
+
+        const responseInterceptorId = apiClient.interceptors.response.use(
+            (response) => response,
+            async (error) => {
+                const originalRequest = error.config;
+                if (error.response.status === 401 && !originalRequest._retry) {
+                    originalRequest._retry = true;
+                    try {
+                        const accessToken = await refreshAccessToken();
+                        apiClient.defaults.headers.common.Authorization = `Token ${accessToken}`;
+                        originalRequest.headers.Authorization = `Token ${accessToken}`;
+                        return apiClient(originalRequest);
+                    } catch (e) {
+                        await logout();
+                    }
+                }
+                return Promise.reject(error);
             }
-            throw error;
-        }
-    )
-    return apiClient;
+        );
+
+        return () => {
+            apiClient.interceptors.request.eject(interceptorId);
+            apiClient.interceptors.response.eject(responseInterceptorId);
+        };
+    }, [tokensRef, refreshAccessToken, logout]);
 };
 
 export default apiClient;

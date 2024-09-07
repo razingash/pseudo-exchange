@@ -43,12 +43,14 @@ export const AuthProvider = ({ children }) => {
             const refreshToken = localStorage.getItem('token')
             if (!refreshToken) {
                 setIsAuth(false);
-            } else {
-                await AuthService.logout(refreshToken);
-                localStorage.removeItem('token')
-                setIsAuth(false);
-                setUuid(null);
             }
+            if (tokensRef.current.refresh) {
+                await AuthService.logout(refreshToken);
+            }
+            localStorage.removeItem('token');
+            tokensRef.current = { access: null, refresh: null };
+            setIsAuth(false);
+            setUuid(null);
         } catch (e) {
             console.log("error")
         }
