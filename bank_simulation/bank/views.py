@@ -116,10 +116,10 @@ class CreditApi(APIView): #mb later change this api to two different - with gett
         serializer.is_valid(raise_exception=True)
 
         money_for_repayment = request.data.get('amount')
-        credit_id = request.data.get('credit_id')
+        credit_uuid = request.data.get('credit_uuid')
 
         credit = update_pay_credit_early(sender_uuid=account_uuid, money_for_repayment=money_for_repayment,
-                                         credit_id=credit_id)
+                                         credit_uuid=credit_uuid)
 
         return Response(CreditSerializer(credit, many=False).data)
 
@@ -161,12 +161,12 @@ class TransactionsApi(APIView):
         serializer = AccountTransactionsSerializer(data=request.data, context={'method': 'POST'})
         serializer.is_valid(raise_exception=True)
 
-        asset_id = request.data.get('asset_id')
+        ticker = request.data.get('ticker')
         amount = request.data.get('amount')
         transaction_type = request.data.get('transaction_type')
         currency_type = request.data.get('currency_type')
 
-        current_transaction = create_new_transaction(account_uuid=account_uuid, amount=amount, asset_id=asset_id,
+        current_transaction = create_new_transaction(account_uuid=account_uuid, amount=amount, ticker=ticker,
                                                      currency_type=currency_type, transaction_type=transaction_type)
         return Response(AccountTransactionsSerializer(current_transaction, many=False).data)
 

@@ -12,7 +12,7 @@ export default class TransferService {
     static async createNewTransfers(userUuid, amount, receiver_uuid) {
         try {
             const response = await apiClient.post(`/transfers/${userUuid}/`, {amount:amount, receiver:receiver_uuid})
-            return response.data
+            return response.status
         } catch (e) {
             console.log(e)
         }

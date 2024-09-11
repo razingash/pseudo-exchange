@@ -90,8 +90,8 @@ class TransferSerializer(serializers.Serializer):
         return data
 
 
-class CreditSerializer(serializers.Serializer): # добавить отдельный uuid для кредита
-    id = serializers.IntegerField(read_only=True)
+class CreditSerializer(serializers.Serializer):
+    uuid = serializers.CharField(read_only=True)
     account = serializers.CharField(source='account.account_auth_info.username')
     credit_type = serializers.CharField(source='get_credit_type_display', read_only=False, max_length=1)
     credit_status = serializers.ReadOnlyField(source='get_credit_status_display')
@@ -127,7 +127,7 @@ class CreditSerializer(serializers.Serializer): # добавить отдель�
 class ConversionGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Conversion
-        fields = ('amount', 'time_stamp', 'starting_currency', 'final_currency', 'conversion_percentage')
+        fields = ('amount', 'final_amount', 'time_stamp', 'starting_currency', 'final_currency', 'conversion_percentage')
 
 class ConversionSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
@@ -173,11 +173,11 @@ class AccountTransactionsSerializer(serializers.Serializer):
 
 class AccountAssetsSerializer(serializers.ModelSerializer):
     account = serializers.CharField(source='account.account_auth_info.username')
-    asset = serializers.CharField(source='asset.ticker')
+    ticker = serializers.CharField(source='asset.ticker')
 
     class Meta:
         model = AccountAsset
-        fields = ("account", 'asset', 'amount')
+        fields = ("account", 'ticker', 'amount')
 
 
 class AssetsListSerializer(serializers.ModelSerializer):

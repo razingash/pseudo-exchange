@@ -17,12 +17,12 @@ export default class CreditService {
             console.log(e)
         }
     }
-    static async payForCredit(userUuid, creditType, amount) {
+    static async payForCredit(userUuid, creditUuid, amount) {
         try {
-            const response = await apiClient.patch(`/credits/${userUuid}/`, {credit_type: creditType, amount:amount})
-            return response.data
+            const response = await apiClient.patch(`/credits/${userUuid}/`, {credit_uuid: creditUuid, amount:amount})
+            return response.status
         } catch (e) {
-            console.log(e)
+            return e.status
         }
     }
 }

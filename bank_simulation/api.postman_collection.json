@@ -19,23 +19,18 @@
 							"formdata": [
 								{
 									"key": "username",
-									"value": "postman3",
+									"value": "postman2",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "postman3",
-									"type": "text"
-								},
-								{
-									"key": "pin",
-									"value": "7777",
+									"value": "postman2\n\n",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/registration/users/",
+							"raw": "http://127.0.0.1:8000/api/v1/registration/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -48,7 +43,6 @@
 								"api",
 								"v1",
 								"registration",
-								"users",
 								""
 							]
 						}
@@ -56,27 +50,21 @@
 					"response": []
 				},
 				{
-					"name": "login",
+					"name": "verify token",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "username",
-									"value": "postman3",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "postman3",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNTgwNjgxMiwiaWF0IjoxNzI1ODAzMjEyLCJqdGkiOiJiZTAyNTQ5ZWYzOGE0YmM5YjJhZjIyYmU4ZWU1MTllNCIsInVzZXJfaWQiOjF9.vYwMzPuh4lxF9rExKaQWW32KRBC_IXxMIbxvfSnF_Jw\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/auth/token/login/",
+							"raw": "http://127.0.0.1:8000/api/v1/token/verify/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -88,9 +76,83 @@
 							"path": [
 								"api",
 								"v1",
-								"auth",
 								"token",
-								"login",
+								"verify",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNDM2MDQyNiwiaWF0IjoxNzI0Mjc0MDI2LCJqdGkiOiI0ZjY0YzUyNzFhOTY0MDIyOWJiMzZhNmYzZjM1YzFkYyIsInVzZXJfaWQiOjF9.1qw7jHcnpvuxUTGeaLDE2O6AnlcETl7QQi8mzLpa1qY\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/token/refresh/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"token",
+								"refresh",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "log in",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username\n",
+									"value": "postman3",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "postman3",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/token/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"token",
 								""
 							]
 						}
@@ -104,12 +166,22 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token e2a74e5fae773df8560d44734d317ec8ac48c1e4",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNTcxNzY3NywiaWF0IjoxNzI1NzE0MDc3LCJqdGkiOiI0MDMzNGVjOWY0MDE0NGNlYThkNTBiNDU0YTQyMzQ4YiIsInVzZXJfaWQiOjN9.PAkoGoiaOV6tkOy72Fxuga7fwfFtjYGfGOkA2bh_9uA",
 								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "refresh_token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNTcxNzYwMSwiaWF0IjoxNzI1NzE0MDAxLCJqdGkiOiI0ODQ1YjhjY2U2MjI0NGQ4OTYzNzgxOWU5MDJjY2ZmOCIsInVzZXJfaWQiOjN9.RoVlb0DRFKUXT_ng-mnXFzLnuY8d4b7hwNk73vE3Te0",
+									"type": "text"
+								}
+							]
+						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/auth/token/logout/",
+							"raw": "http://127.0.0.1:8000/api/v1/logout/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -121,9 +193,38 @@
 							"path": [
 								"api",
 								"v1",
-								"auth",
-								"token",
 								"logout",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get uuid",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1ODAzNjIxLCJpYXQiOjE3MjU4MDMzMjEsImp0aSI6IjJkNWI2NjkwMzM0OTRmN2Q5OTUyM2UxNTg2ZDY1OGUyIiwidXNlcl9pZCI6M30.kRXaE_g1KEcGIeoiIc33Y-voFP4uyYfm-aoQPZkQ7eg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/get-uuid/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"get-uuid",
 								""
 							]
 						}
@@ -146,7 +247,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1Mzc0MTQzLCJpYXQiOjE3MjUzNzM4NDMsImp0aSI6IjJlMzRkYTg1YTlkYTQxMGY5YjEyMTk1ZjkxZTVlMjUxIiwidXNlcl9pZCI6MX0.TGnjqd5xu6j6JeH2sXf-DyJkPxyQUKohZCnSinuluhk",
 								"type": "text"
 							}
 						],
@@ -160,7 +261,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/account/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/account/ee5aec0d30614ea4ad5c98e49178694b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -173,7 +274,7 @@
 								"api",
 								"v1",
 								"account",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								"ee5aec0d30614ea4ad5c98e49178694b",
 								""
 							]
 						}
@@ -190,7 +291,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1MjA5ODQ2LCJpYXQiOjE3MjUyMDk3ODYsImp0aSI6ImQ5ZWNkYzRhNjExNzQzZTFhNzliMTJjMWJhOThlMzFhIiwidXNlcl9pZCI6MX0.N6ELdtqG85KUY6bRCD4zIONmx8dIOOxkfUPP1GZ8C50",
 								"type": "text"
 							}
 						],
@@ -204,7 +305,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/wallets/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/wallets/ee5aec0d30614ea4ad5c98e49178694b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -217,7 +318,7 @@
 								"api",
 								"v1",
 								"wallets",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								"ee5aec0d30614ea4ad5c98e49178694b",
 								""
 							]
 						}
@@ -231,21 +332,22 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1NDUxMzE5LCJpYXQiOjE3MjU0NTEwMTksImp0aSI6ImNmNTgzOWVkMWQzYzQ0NzQ5YjllMjc0ZWM3MGJjNWJiIiwidXNlcl9pZCI6MX0.4f1ie3fCAvLKrUOIWdS7V-Y5fHh6f30kTFymN02VIUM",
 								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"currency\": \"EUR\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "currency",
+									"value": "CZK",
+									"type": "text"
 								}
-							}
+							]
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/wallets/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/wallets/95a0fa45758847898703224e798e324b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -258,50 +360,7 @@
 								"api",
 								"v1",
 								"wallets",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get fresh rates",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/rates/",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "8000",
-							"path": [
-								"api",
-								"v1",
-								"rates",
+								"95a0fa45758847898703224e798e324b",
 								""
 							]
 						}
@@ -324,7 +383,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1MzgyNjE3LCJpYXQiOjE3MjUzODIzMTcsImp0aSI6IjI0MGViYTg0YTQ2NjQ5NjBhMDFhZjVkODE5OTIxNTI1IiwidXNlcl9pZCI6MX0.Toz_Ft3YIoOv4HN6FdnoTIkWDVtM_o9O_Sx2KIUsA3o",
 								"type": "text"
 							}
 						],
@@ -338,7 +397,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/transfers/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/transfers/95a0fa45758847898703224e798e324b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -351,7 +410,7 @@
 								"api",
 								"v1",
 								"transfers",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								"95a0fa45758847898703224e798e324b",
 								""
 							]
 						}
@@ -365,21 +424,27 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDYxOTc0LCJpYXQiOjE3MjYwNjE2NzQsImp0aSI6ImQ0Mjg1NDg2ZjMzMjRjMTQ4NzNhYTExZDU5MTUxNmU2IiwidXNlcl9pZCI6M30.TPmZ0c5rSqCVHXFGO1fNH1bHe49mOpa7qipLQrgfNIk",
 								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"amount\": \"1000\",\r\n    \"receiver\": \"98d24f13-11c8-4e00-8084-b5cd57efccaa\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "amount",
+									"value": "1000",
+									"type": "text"
+								},
+								{
+									"key": "receiver",
+									"value": "1000000000000001",
+									"type": "text"
 								}
-							}
+							]
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/transfers/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/transfers/95a0fa45758847898703224e798e324b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -392,7 +457,7 @@
 								"api",
 								"v1",
 								"transfers",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								"95a0fa45758847898703224e798e324b",
 								""
 							]
 						}
@@ -415,7 +480,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDY5MTA1LCJpYXQiOjE3MjYwNjg4MDUsImp0aSI6IjNlMDQ4N2YyMWJkODRjOTY5YjBiMzcxODI4ZmM1ODZkIiwidXNlcl9pZCI6M30.g4opBrdTQglcTyrEYasJNhE6m42AKmIpUaksm4amn7c",
 								"type": "text"
 							}
 						],
@@ -429,7 +494,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/credits/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/credits/95a0fa45758847898703224e798e324b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -442,7 +507,7 @@
 								"api",
 								"v1",
 								"credits",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								"95a0fa45758847898703224e798e324b",
 								""
 							]
 						}
@@ -456,7 +521,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDUzOTU3LCJpYXQiOjE3MjYwNTM2NTcsImp0aSI6ImQ3MDgzNDUwMzYyMTRlMTQ5MzA5YWRkN2NlOGIzNThhIiwidXNlcl9pZCI6M30.UE7xB0iQZg3TKAigj_gnXpLSxLdFBhgNAVi8oasZZ-o",
 								"type": "text"
 							}
 						],
@@ -470,7 +535,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/credits/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/credits/95a0fa45758847898703224e798e324b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -483,7 +548,7 @@
 								"api",
 								"v1",
 								"credits",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								"95a0fa45758847898703224e798e324b",
 								""
 							]
 						}
@@ -497,13 +562,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDYzODEzLCJpYXQiOjE3MjYwNjM1MTMsImp0aSI6IjUxYWM2YzI3ODMzZTQ0ZmI4ZGY5MzNkOGE0ZTRhYjk4IiwidXNlcl9pZCI6M30.pCjiRrGZ9eVNBkJqMTmcomx3mC4uanLKXD7JBAUVTP8",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"amount\": \"1000\",\r\n    \"credit_id\": \"2\"\r\n}",
+							"raw": "{\r\n    \"amount\": \"1000\",\r\n    \"credit_uuid\": \"47c4f1874fc745f38422c536afe38fc1\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -511,7 +576,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/credits/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/credits/95a0fa45758847898703224e798e324b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -524,7 +589,7 @@
 								"api",
 								"v1",
 								"credits",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								"95a0fa45758847898703224e798e324b",
 								""
 							]
 						}
@@ -547,7 +612,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDcwNDY2LCJpYXQiOjE3MjYwNzAxNjYsImp0aSI6IjI5YTBjNmViNTM4ZTQxOTBiZDc3ODJlYWMyNTU4ZjI2IiwidXNlcl9pZCI6M30.B-TNysYaf4nRFapo8BWVDrTKbBYBi3ZLwbCl0wSJbxw",
 								"type": "text"
 							}
 						],
@@ -561,7 +626,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/conversions/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/conversions/95a0fa45758847898703224e798e324b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -574,7 +639,7 @@
 								"api",
 								"v1",
 								"conversions",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								"95a0fa45758847898703224e798e324b",
 								""
 							]
 						}
@@ -588,13 +653,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDczNDc2LCJpYXQiOjE3MjYwNzMxNzYsImp0aSI6Ijk0OTU0OGQ3YjU3YTQyZDk4YzRkNjk0ZTYxMDZmNDQ4IiwidXNlcl9pZCI6M30.ExSL61nhDGJXmqSmscv0j3H1CxOqo7yvBOpYrH9bj8s",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"amount\": \"777\",\r\n    \"starting_currency\": \"USD\",\r\n    \"final_currency\": \"INR\"\r\n}",
+							"raw": "{\r\n    \"amount\": \"777\",\r\n    \"starting_currency\": \"EUR\",\r\n    \"final_currency\": \"INR\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -602,7 +667,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/conversions/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/conversions/95a0fa45758847898703224e798e324b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -615,7 +680,7 @@
 								"api",
 								"v1",
 								"conversions",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								"95a0fa45758847898703224e798e324b",
 								""
 							]
 						}
@@ -675,7 +740,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDgzNzc1LCJpYXQiOjE3MjYwODM0NzUsImp0aSI6ImVmOTUwMmVkMGQ1ZjQ4Y2I5YWI2ZjNkZTVhYzkzZTM2IiwidXNlcl9pZCI6M30.-rVGGXz2QUvXT5nTJYw4CcKQLrhwOsVmnuhvvBr6vvk",
 								"type": "text"
 							}
 						],
@@ -689,7 +754,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/user-assets/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/user-assets/95a0fa45758847898703224e798e324b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -702,7 +767,7 @@
 								"api",
 								"v1",
 								"user-assets",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								"95a0fa45758847898703224e798e324b",
 								""
 							]
 						}
@@ -716,16 +781,10 @@
 					},
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
-								"type": "text"
-							}
-						],
+						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"asset_id\": \"2\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -733,7 +792,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/asset-story/",
+							"raw": "http://127.0.0.1:8000/api/v1/asset-story/TBMC/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -746,6 +805,7 @@
 								"api",
 								"v1",
 								"asset-story",
+								"TBMC",
 								""
 							]
 						}
@@ -762,7 +822,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDgwOTk0LCJpYXQiOjE3MjYwODA2OTQsImp0aSI6IjQ5ODVkOTU1YzE2NjQ1OTM4YTE5NWI0YTU0OTZkZDZhIiwidXNlcl9pZCI6M30.ZaFjY_YP5KEYFp4MM5bqCKy_MCGcpaWcs-Yx-6HXZhI",
 								"type": "text"
 							}
 						],
@@ -776,7 +836,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/transactions/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/transactions/95a0fa45758847898703224e798e324b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -789,7 +849,7 @@
 								"api",
 								"v1",
 								"transactions",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								"95a0fa45758847898703224e798e324b",
 								""
 							]
 						}
@@ -797,19 +857,19 @@
 					"response": []
 				},
 				{
-					"name": "create asset transaction",
+					"name": "buy asset",
 					"request": {
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 2321397e5bec888244acfd36cc986633e8e75ce7",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDgwOTk0LCJpYXQiOjE3MjYwODA2OTQsImp0aSI6IjQ5ODVkOTU1YzE2NjQ1OTM4YTE5NWI0YTU0OTZkZDZhIiwidXNlcl9pZCI6M30.ZaFjY_YP5KEYFp4MM5bqCKy_MCGcpaWcs-Yx-6HXZhI",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"asset_id\": \"1\",\r\n    \"transaction_type\": \"P\",\r\n    \"currency_type\": \"USD\",\r\n    \"amount\": \"10\"\r\n}",
+							"raw": "{\r\n    \"ticker\": \"TBMC\",\r\n    \"transaction_type\": \"P\",\r\n    \"currency_type\": \"EUR\",\r\n    \"amount\": \"10\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -817,7 +877,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/transactions/91b9dc53-57d3-487c-b01d-5f592990a6e9/",
+							"raw": "http://127.0.0.1:8000/api/v1/transactions/95a0fa45758847898703224e798e324b/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -830,7 +890,7 @@
 								"api",
 								"v1",
 								"transactions",
-								"91b9dc53-57d3-487c-b01d-5f592990a6e9",
+								"95a0fa45758847898703224e798e324b",
 								""
 							]
 						}
@@ -839,6 +899,74 @@
 				}
 			],
 			"description": "buying/selling assets that are regulated by the server"
+		},
+		{
+			"name": "external api",
+			"item": [
+				{
+					"name": "get currencies rates",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/rates/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"rates",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get metall rates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/metals/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"metals",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "externally related api. Updates once a day"
 		}
 	]
 }

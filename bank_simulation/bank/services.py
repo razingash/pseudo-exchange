@@ -81,7 +81,7 @@ def check_client_potential(user_id, amount):
 def check_client_potential_assets(user_id, amount, currency_type, asset_id):
     asset = Assets.objects.get(id=asset_id)
     cost = int(amount) * asset.cost
-    if currency_type == "USD":
+    if currency_type == "EUR":
         client_balance = int(Account.objects.only('balance').get(id=user_id).balance)
         if client_balance >= cost:
             return cost
@@ -147,12 +147,12 @@ def get_asset_story(asset_ticker):
         return json_data
 
 
-def update_pay_credit_early(sender_uuid, money_for_repayment, credit_id):
+def update_pay_credit_early(sender_uuid, money_for_repayment, credit_uuid):
     sender_id = get_user_id(sender_uuid)
     client_potential = check_client_potential(user_id=sender_id, amount=money_for_repayment)
     if client_potential:
         try:
-            credit = Credit.objects.get(account_id=sender_id, id=credit_id)
+            credit = Credit.objects.get(account_id=sender_id, uuid=credit_uuid)
         except ObjectDoesNotExist:
             raise CustomException("credit wasn't found")
         account = Account.objects.get(account_auth_info_id=sender_id)
@@ -175,7 +175,7 @@ def update_pay_credit_early(sender_uuid, money_for_repayment, credit_id):
 
 
 def create_new_wallet(account_uuid, currency):
-    if currency == 'USD':
+    if currency == 'EUR':
         raise CustomException("you already have a wallet with this currency by default")
     account_id = get_user_id(account_uuid)
     if check_user_wallet(account_id, currency):
@@ -187,11 +187,11 @@ def create_new_wallet(account_uuid, currency):
 def create_conversion(account_uuid, amount, starting_currency, final_currency):
     account_id = get_user_id(account_uuid)
     amount = int(amount)
-    rate = RateList.objects.only('id').latest('timestamp').id
-    if starting_currency != "USD":
+    rate = RateList.objects.only('id').latest('measurement_date').id
+    if starting_currency != "EUR":
         if not check_user_wallet(account_id, starting_currency):
             raise CustomException(f"you don't have a wallet with s {starting_currency} currency")
-    if final_currency != "USD":
+    if final_currency != "EUR":
         if not check_user_wallet(account_id, final_currency):
             raise CustomException(f"you don't have a wallet with f {final_currency} currency")
     client_potential = check_client_potential(user_id=account_id, amount=amount)
@@ -199,14 +199,14 @@ def create_conversion(account_uuid, amount, starting_currency, final_currency):
         conversion = Conversion.objects.create(account_id=account_id, amount=amount,
                                                starting_currency=starting_currency, final_currency=final_currency)
         ConversionRate.objects.create(exchange_id=rate, conversion=conversion)
-        if starting_currency == "USD":
+        if starting_currency == "EUR":
             from_wallet = Account.objects.get(account_auth_info_id=account_id)
             to_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=final_currency)
             from_wallet.balance -= amount
             received_money = 0.01 * (100 - conversion.conversion_percentage) * amount
             to_wallet.balance += round(Decimal(received_money), 2)
             from_wallet.save(), to_wallet.save()
-        elif final_currency == "USD":
+        elif final_currency == "EUR":
             from_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=starting_currency)
             to_wallet = Account.objects.get(account_auth_info_id=account_id)
             from_wallet.balance -= amount
@@ -223,18 +223,20 @@ def create_conversion(account_uuid, amount, starting_currency, final_currency):
         return conversion
     return client_potential
 
-def create_new_transaction(account_uuid, amount, transaction_type, currency_type, asset_id):
+def create_new_transaction(account_uuid, amount, transaction_type, currency_type, ticker):
     account_id = get_user_id(account_uuid)
     amount = int(amount)
-    asset = Assets.objects.filter(id=asset_id)
+    asset = Assets.objects.filter(ticker=ticker)
 
     if not asset.exists():
-        raise CustomException(f"there is no such assets like {asset_id}")
+        raise CustomException(f"there is no such assets like {ticker}")
     if asset[0].currency_type != currency_type:
-        raise CustomException(f"asset with id {asset_id} is sold in {asset[0].currency_type} currency, not in {currency_type}")
-    if currency_type != "USD":
+        raise CustomException(f"asset with ticker {ticker} is sold in {asset[0].currency_type} currency, not in {currency_type}")
+    if currency_type != "EUR":
         if not check_user_wallet(account_id, currency_type):
             raise CustomException(f"you need a wallet with '{currency_type}' to make this deal")
+
+    asset_id = asset[0].id
 
     if transaction_type == "P": # purchase
         client_potential = check_client_potential_assets(user_id=account_id, amount=amount, currency_type=currency_type,
@@ -245,7 +247,7 @@ def create_new_transaction(account_uuid, amount, transaction_type, currency_type
             UserTransaction.objects.create(user_id=account_id, securities_id=asset_id, transaction=transaction)
 
             user_assets = AccountAsset.objects.filter(account_id=account_id, asset_id=asset_id)
-            if currency_type == "USD":
+            if currency_type == "EUR":
                 account = Account.objects.get(account_auth_info_id=account_id)
                 account.balance -= client_potential
                 account.save()
@@ -272,7 +274,7 @@ def create_new_transaction(account_uuid, amount, transaction_type, currency_type
             if user_assets.amount >= amount:
                 asset_cost = int(Assets.objects.get(id=asset_id).cost)
                 cost = amount * asset_cost
-                if currency_type == "USD":
+                if currency_type == "EUR":
                     account = Account.objects.get(account_auth_info_id=account_id)
                     account.balance += cost
                     account.save()

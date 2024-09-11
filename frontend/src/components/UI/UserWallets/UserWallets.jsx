@@ -21,12 +21,18 @@ const UserWallets = ({props}) => {
         setWallets(response)
     })
 
+    const refreshAllWallets = () => {
+        void fetchMainWallet();
+        void fetchWallets();
+    };
+
+    const refreshAdditionalWallets = () => {
+        void fetchWallets();
+    }
+
     useEffect(() => {
         if (uuid) {
-            void fetchMainWallet();
-            void fetchWallets();
-        } else {
-            console.log('UUID is not defined');
+            refreshAllWallets();
         }
     }, [uuid])
 
@@ -47,7 +53,7 @@ const UserWallets = ({props}) => {
                 <div className={"new__wallet__field"}>
                     <div className={"new__wallet__field__exit"}><div onClick={props.removeNewSelectedForm} className={"exit-mark"}>&#x274c;</div></div>
                     <div className={"new__wallet__item"}>open new wallet</div>
-                    <NewWalletForm />
+                    <NewWalletForm onSuccess={refreshAdditionalWallets} />
                 </div>
             )}
         </div>

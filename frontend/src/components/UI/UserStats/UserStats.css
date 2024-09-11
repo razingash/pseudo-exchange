@@ -82,6 +82,12 @@
 .content__item__row:hover {
     color: var(--selected-item);
 }
+.content__item__payment{
+    cursor: pointer;
+}
+.content__item__payment:hover {
+    color: #c800ff;
+}
 
 .opened {
     border-color: var(--selected-item);

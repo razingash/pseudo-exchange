@@ -28,7 +28,7 @@ export default class AccountService {
     static async createNewWallet(userUuid, currency) {
         try {
             const response = await apiClient.post(`/wallets/${userUuid}/`, {currency:currency})
-            return response.data
+            return response.status
         } catch (e) {
             return e.status;
         }

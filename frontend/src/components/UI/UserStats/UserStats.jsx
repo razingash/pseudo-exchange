@@ -4,11 +4,16 @@ import "./UserStats.css"
 import UserTransfers from "./UserTransfers";
 import UserCredits from "./UserCredits";
 import NewTransferForm from "../Forms/NewTransferForm";
+import NewCreditForm from "../Forms/NewCreditForm";
+import NewConversionForm from "../Forms/NewConversionForm";
+import UserConversions from "./UserConversions";
+import SellAssetForm from "../Forms/SellAssetForm";
+import UserAssets from "./UserAssets";
 
 const UserStats = ({props}) => {
     const [selectedAdapter, setSelectedAdapter] = useState(null);
     const [activeForm, setActiveForm] = useState(null);
-    const adapterItems = ["transfers", "credits", "conversions", "assets", "money journal?"];
+    const adapterItems = ["transfers", "credits", "conversions", "assets"];
 
     const handleAdapterClick = (index) => {
         setSelectedAdapter(index);
@@ -26,11 +31,9 @@ const UserStats = ({props}) => {
             case 1:
                 return <UserCredits/>; // credits
             case 2:
-                return <div className="content__item">case 2</div>; // conversions
+                return <UserConversions/>; // conversions
             case 3:
-                return <div className="content__item">case 3</div>; // assets
-            case 4:
-                return <div className="content__item">case 4</div>; // money journal?
+                return <UserAssets/>; // assets
             default:
                 return <div className="content__item">default</div>;
         }
@@ -40,14 +43,12 @@ const UserStats = ({props}) => {
         switch (activeForm) {
             case 0:
                 return <NewTransferForm />;
-            /*case 1:
+            case 1:
                 return <NewCreditForm />;
             case 2:
                 return <NewConversionForm />;
             case 3:
-                return <NewAssetForm />;
-            case 4:
-                return <NewJournalForm />;*/
+                return <SellAssetForm />;
             default:
                 return null;
         }

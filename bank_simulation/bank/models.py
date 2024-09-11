@@ -2,6 +2,7 @@ import json
 import os
 import time
 from datetime import datetime
+from decimal import Decimal
 from uuid import uuid4
 
 from django.conf import settings
@@ -164,7 +165,8 @@ class Transfer(models.Model):
 
 class Conversion(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=16, decimal_places=2, blank=False, null=False, validators=[MinValueValidator(10)])
+    amount = models.DecimalField(max_digits=16, decimal_places=2, blank=False, null=False, validators=[MinValueValidator(Decimal(10))])
+    final_amount = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
     time_stamp = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     starting_currency = models.CharField(max_length=3, choices=Currencies.choices, blank=False, null=False)
     final_currency = models.CharField(max_length=3, choices=Currencies.choices, blank=False, null=False)
@@ -175,6 +177,9 @@ class Conversion(models.Model):
             raise ValidationError("Starting currency and final currency cannot be the same.")
 
     def save(self, *args, **kwargs):
+        if self.starting_currency != self.final_currency:
+            self.final_amount = (100 - self.conversion_percentage) / 100 * self.amount
+
         self.clean()
         super().save(*args, **kwargs)
 
