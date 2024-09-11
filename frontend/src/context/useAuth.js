@@ -1,4 +1,4 @@
-import {createContext, useContext, useRef, useState} from "react";
+import {createContext, useContext, useEffect, useRef, useState} from "react";
 import AuthService from "../API/AuthService";
 import AccountService from "../API/UserRelatedServices/AccountService";
 
@@ -9,18 +9,9 @@ export const useAuth = () => {
 }
 
 export const AuthProvider = ({ children }) => {
-    const [isAuth, setIsAuth] = useState(false);
+    const [isAuth, setIsAuth] = useState(() => !!localStorage.getItem('token'));
     const [uuid, setUuid] = useState(null);
-    const tokensRef = useRef({access: null});
-
-    const fetchUserUuid = async () => {
-        try {
-            const userUuid = await AccountService.getUserUuid();
-            setUuid(userUuid);
-        } catch (e) {
-            console.log('Failed to fetch uuid:', e);
-        }
-    }
+    const tokensRef = useRef({ access: null, refresh: null });
 
     const login = async (username, password) => {
         try {
@@ -32,9 +23,9 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', data.refresh)
             tokensRef.current = {access: data.access, refresh: data.refresh};
             setIsAuth(true);
-            await fetchUserUuid();
+
         } catch (e) {
-            console.log('Login Error:', e)
+            console.log(`Login Error: ${e}`)
         }
     }
 
@@ -62,8 +53,7 @@ export const AuthProvider = ({ children }) => {
             const refreshToken = localStorage.getItem('token')
             if (!refreshToken) {
                 await logout();
-            }
-            else if ( isValid === true ) {
+            } else if (isValid === true) {
                 const data = await AuthService.refreshAccessToken(refreshToken)
                 tokensRef.current = {access: data.access, refresh: data.refresh};
                 setIsAuth(true);
@@ -96,10 +86,28 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
+    useEffect(() => {
+        const initializeAuth = async () => {
+            const isValidToken = await validateRefreshToken();
+            if ( isValidToken === true ) {
+                await refreshAccessToken();
+            }
+            if (isAuth) {
+                try {
+                    const response = await AccountService.getUserUuid();
+                    setUuid(response.uuid)
+                } catch (e) {
+                    console.log(`Token: ${tokensRef.current.access}\nError: ${e}`)
+                }
+            }
+        }
+        void initializeAuth();
+    }, [isAuth]);
+
     return (
-        <AuthContext.Provider value={{isAuth, setIsAuth, tokensRef, uuid, setUuid,
-            login, logout, refreshAccessToken, validateRefreshToken}}>
-            { children }
+        <AuthContext.Provider value={{ isAuth, setIsAuth, tokensRef, uuid, setUuid,
+            login, logout, refreshAccessToken, validateRefreshToken
+        }}> {children}
         </AuthContext.Provider>
     );
 }

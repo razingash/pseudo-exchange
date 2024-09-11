@@ -28,7 +28,7 @@ const UserWallets = ({props}) => {
         } else {
             console.log('UUID is not defined');
         }
-    }, [uuid]) // если добавить
+    }, [uuid])
 
     return (
         <div className={"field__wallets"}>

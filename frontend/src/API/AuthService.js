@@ -39,7 +39,7 @@ export default class AuthService {
     }
     static async logout(token) {
         try {
-            const response = apiClient.post('http://127.0.0.1:8000/api/v1/logout/', {refresh_token: token})
+            const response = apiClient.post('/logout/', {refresh_token: token})
             return response.data;
         } catch (e) {
             console.log(e)

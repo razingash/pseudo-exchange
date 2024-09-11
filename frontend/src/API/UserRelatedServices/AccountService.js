@@ -3,7 +3,7 @@ import apiClient from "../../hooks/useApiInterceptors";
 export default class AccountService {
     static async getUserUuid() {
         try {
-            const response = await apiClient.get('http://127.0.0.1:8000/api/v1/get-uuid/')
+            const response = await apiClient.get('/get-uuid/')
             return response.data
         } catch (e) {
             console.log(e)
@@ -11,7 +11,7 @@ export default class AccountService {
     }
     static async getAccountInfo(userUuid) {
         try {
-            const response = await apiClient.get(`http://127.0.0.1:8000/api/v1/account/${userUuid}/`)
+            const response = await apiClient.get(`/account/${userUuid}/`)
             return response.data
         } catch (e) {
             console.log(e)
@@ -19,7 +19,7 @@ export default class AccountService {
     }
     static async getAdditionalWallets(userUuid) {
         try {
-            const response = await apiClient.get(`http://127.0.0.1:8000/api/v1/wallets/${userUuid}/`)
+            const response = await apiClient.get(`/wallets/${userUuid}/`)
             return response.data
         } catch (e) {
             console.log(e)
@@ -27,7 +27,7 @@ export default class AccountService {
     }
     static async createNewWallet(userUuid, currency) {
         try {
-            const response = await apiClient.post(`http://127.0.0.1:8000/api/v1/wallets/${userUuid}/`, {currency:currency})
+            const response = await apiClient.post(`/wallets/${userUuid}/`, {currency:currency})
             return response.data
         } catch (e) {
             return e.status;

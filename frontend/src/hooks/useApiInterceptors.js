@@ -10,11 +10,10 @@ const apiClient = axios.create({
 })
 
 export const useApiInterceptors = () => {
-    const { tokensRef, refreshAccessToken, logout } = useAuth();
+    const { tokensRef, refreshAccessToken, logout, uuid } = useAuth();
 
     useEffect(() => {
         if (!tokensRef.current) return;
-
         const interceptorId = apiClient.interceptors.request.use(
             (config) => {
                 if (tokensRef.current.access) {
@@ -48,7 +47,7 @@ export const useApiInterceptors = () => {
             apiClient.interceptors.request.eject(interceptorId);
             apiClient.interceptors.response.eject(responseInterceptorId);
         };
-    }, [tokensRef, refreshAccessToken, logout]);
+    }, [tokensRef, uuid]);
 };
 
 export default apiClient;
