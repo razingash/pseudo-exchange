@@ -2,6 +2,7 @@ import json
 from decimal import Decimal
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
@@ -106,20 +107,29 @@ def get_objects_list(model, amount):
     data = model.objects.all()[:to_int(amount)].order_by('-id')
     return data
 
-def get_objects_by_uuid(model, account_uuid):
-    account_id = get_user_id(account_uuid=account_uuid)
-    obj = model.objects.filter(account_id=account_id)
-    return obj
-
 def get_account_info(account_uuid):
     account_id = get_user_id(account_uuid)
     account = Account.objects.get(account_auth_info_id=account_id)
     return account
 
-def get_user_transfers(account_uuid):
+
+def get_objects_by_uuid(model, account_uuid, page, limit=10):
+    account_id = get_user_id(account_uuid=account_uuid)
+    obj = model.objects.filter(account_id=account_id).order_by('id')
+    paginator = Paginator(obj, limit)
+    page = int(page) if page is not None else 1
+    obj = paginator.get_page(page)
+    has_next = obj.has_next()
+    return obj, has_next
+
+def get_user_transfers(account_uuid, page, limit=10):
     account_id = get_user_id(account_uuid)
-    transfers = Transfer.objects.filter(Q(sender_id=account_id) | Q(receiver_id=account_id))
-    return transfers
+    transfers = Transfer.objects.filter(Q(sender_id=account_id) | Q(receiver_id=account_id)).order_by('id')
+    paginator = Paginator(transfers, limit)
+    page = int(page) if page is not None else 1
+    transfers = paginator.get_page(page)
+    has_next = transfers.has_next()
+    return transfers, has_next
 
 def get_currencies_rates_json(): # currencies
     rates = RateList.objects.latest('measurement_date').data.path

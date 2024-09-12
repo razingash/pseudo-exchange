@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import AuthForm from "../AuthForm/AuthForm";
 import {useAuth} from "../../../context/useAuth";
 import {Link} from "react-router-dom";
+import AuthForm from "../Forms/AuthForm/AuthForm";
 
 const Header = () => {
     const [isFormSpawned, setFormSpawned] = useState(false);

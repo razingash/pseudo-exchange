@@ -1,9 +1,9 @@
 import apiClient from "../../hooks/useApiInterceptors";
 
 export default class CreditService {
-    static async getUserCredits(userUuid) {
+    static async getUserCredits(userUuid, page=1) {
         try {
-            const response = await apiClient.get(`/credits/${userUuid}/`)
+            const response = await apiClient.get(`/credits/${userUuid}/`, {params: {page: page}})
             return response.data
         } catch (e) {
             console.log(e)

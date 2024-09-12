@@ -1,9 +1,9 @@
 import apiClient from "../../hooks/useApiInterceptors";
 
 export default class ConversionService {
-    static async getUserConversions(userUuid) {
+    static async getUserConversions(userUuid, page=1) {
         try {
-            const response = await apiClient.get(`/conversions/${userUuid}/`)
+            const response = await apiClient.get(`/conversions/${userUuid}/`, {params: {page: page}})
             return response.data
         } catch (e) {
             console.log(e)

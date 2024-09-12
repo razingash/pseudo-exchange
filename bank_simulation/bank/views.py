@@ -60,8 +60,9 @@ class ForeignCurrencyWalletApi(APIView):
 
     @custom_exception
     def get(self, request, account_uuid): # get another wallets
-        account = get_objects_by_uuid(model=ForeignCurrencyWallet, account_uuid=account_uuid)
-        return Response(ForeignCurrencyWalletsSerializer(account, many=True).data)
+        page = request.query_params.get('page')
+        wallets, has_next = get_objects_by_uuid(model=ForeignCurrencyWallet, account_uuid=account_uuid, page=page)
+        return Response(ForeignCurrencyWalletsSerializer(wallets, many=True).data)
 
     @custom_exception
     def post(self, request, account_uuid): # create another wallet
@@ -77,8 +78,10 @@ class TransferApi(APIView):
 
     @custom_exception
     def get(self, request, account_uuid): # user transfers
-        transfers = get_user_transfers(account_uuid)
-        return Response(TransferSerializer(transfers, many=True).data)
+        page = request.query_params.get('page')
+        transfers, has_next = get_user_transfers(account_uuid, page=page)
+        serializer = TransferSerializer(transfers, many=True)
+        return Response({'data': serializer.data, 'has_next': has_next})
 
     @custom_exception
     def post(self, request, account_uuid):
@@ -97,8 +100,10 @@ class CreditApi(APIView): #mb later change this api to two different - with gett
 
     @custom_exception
     def get(self, request, account_uuid): # get current credit
-        credit = get_objects_by_uuid(model=Credit, account_uuid=account_uuid)
-        return Response(CreditSerializer(credit, many=True).data)
+        page = request.query_params.get('page')
+        credit, has_next = get_objects_by_uuid(model=Credit, account_uuid=account_uuid, page=page)
+        serializer = CreditSerializer(credit, many=True)
+        return Response({'data': serializer.data, 'has_next': has_next})
 
     @custom_exception
     def post(self, request, account_uuid): # take new credit
@@ -129,8 +134,10 @@ class ConversionApi(APIView):
 
     @custom_exception
     def get(self, request, account_uuid): # get conversions
-        conversion = get_objects_by_uuid(model=Conversion, account_uuid=account_uuid)
-        return Response(ConversionGetSerializer(conversion, many=True).data)
+        page = request.query_params.get('page')
+        conversion, has_next = get_objects_by_uuid(model=Conversion, account_uuid=account_uuid, page=page)
+        serializer = ConversionGetSerializer(conversion, many=True)
+        return Response({"data": serializer.data, "has_next": has_next})
 
     @custom_exception
     def post(self, request, account_uuid): # convert currency
@@ -152,7 +159,8 @@ class TransactionsApi(APIView):
 
     @custom_exception
     def get(self, request, account_uuid):
-        transactions = get_objects_by_uuid(model=InvestmentTransaction, account_uuid=account_uuid)
+        page = request.query_params.get('page')
+        transactions, has_next = get_objects_by_uuid(model=InvestmentTransaction, account_uuid=account_uuid, page=page)
         return Response(AccountTransactionsSerializer(transactions, many=True).data)
 
     @custom_exception
@@ -184,7 +192,8 @@ class AccountAssetsApi(APIView):
 
     @custom_exception
     def get(self, request, account_uuid):
-        user_assets = get_objects_by_uuid(model=AccountAsset, account_uuid=account_uuid)
+        page = request.query_params.get('page')
+        user_assets, has_next = get_objects_by_uuid(model=AccountAsset, account_uuid=account_uuid, page=page)
         return Response(AccountAssetsSerializer(user_assets, many=True).data)
 
 class AssetStoryApi(APIView):

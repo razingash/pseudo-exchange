@@ -1,24 +1,36 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useFetching} from "../../../hooks/useFetching";
 import TransferService from "../../../API/UserRelatedServices/TransferService";
 import {useAuth} from "../../../context/useAuth";
+import {useObserver} from "../../../hooks/useObserver";
 
 const UserTransfers = () => {
     const { uuid } = useAuth();
-    const [transfers, setTransers] = useState([]);
-    const [fetchTransfers] = useFetching(async () => {
-        const response = await TransferService.getUserTransfers(uuid);
-        setTransers(response)
+    const [transfers, setTransfers] = useState([]);
+    const [page, setPage] = useState(1);
+    const [hasNext, setHasNext] = useState(false);
+    const lastElement = useRef();
+    const [fetchTransfers, isTransfersLoading] = useFetching(async () => {
+        const response = await TransferService.getUserTransfers(uuid, page);
+         setTransfers((prevTransfers) => {
+            const newTransfers = response.data.filter(
+                (transfer) => !prevTransfers.some((t) => t.time_stamp === transfer.time_stamp)
+            );
+            return [...prevTransfers, ...newTransfers];
+        });
+        setHasNext(response.has_next);
     })
+
+    useObserver(lastElement, fetchTransfers, isTransfersLoading, hasNext, page, setPage);
 
     useEffect(() => {
         uuid && void fetchTransfers();
-    }, [])
+    }, [uuid]);
 
     return (
         <>
-            {transfers.length > 0 ? (transfers.map(transfer => (
-                <div className={"content__item"} key={transfer.time_stamp}>
+            {transfers.length > 0 ? (transfers.map((transfer, index) => (
+                <div className={"content__item"} key={transfer.time_stamp} ref={index === transfers.length - 1 ? lastElement : null}>
                     <div className={"content__item__row"}>
                         <div className={""}>{transfer.sender}</div>
                         <div className={""}>{transfer.receiver}</div>

@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import "./AuthForm.css"
-import {useAuth} from "../../../context/useAuth";
-import AuthService from "../../../API/AuthService";
-import {useNotifications} from "../../../context/useNotifications";
+import {useAuth} from "../../../../context/useAuth";
+import {useNotifications} from "../../../../context/useNotifications";
+import AuthService from "../../../../API/AuthService";
 
 const AuthForm = ({onClose}) => {
     const [username, setUsername] = useState('');

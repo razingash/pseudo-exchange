@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Chart from "../Chart/Chart";
 import "./UserStats.css"
 import UserTransfers from "./UserTransfers";
@@ -9,14 +9,27 @@ import NewConversionForm from "../Forms/NewConversionForm";
 import UserConversions from "./UserConversions";
 import SellAssetForm from "../Forms/SellAssetForm";
 import UserAssets from "./UserAssets";
+import {useNavigate, useParams} from "react-router-dom";
 
 const UserStats = ({props}) => {
+    const { adapter } = useParams();
+    const navigate = useNavigate();
     const [selectedAdapter, setSelectedAdapter] = useState(null);
     const [activeForm, setActiveForm] = useState(null);
     const adapterItems = ["transfers", "credits", "conversions", "assets"];
 
+    useEffect(() => {
+        const adapterIndex = adapterItems.indexOf(adapter);
+        if (adapterIndex !== -1) {
+            setSelectedAdapter(adapterIndex);
+        } else {
+            setSelectedAdapter(null);
+        }
+    }, [adapter]);
+
     const handleAdapterClick = (index) => {
         setSelectedAdapter(index);
+        navigate(`/account/${adapterItems[index]}/`);
     }
 
     const handleNewFormClick = (index) => {

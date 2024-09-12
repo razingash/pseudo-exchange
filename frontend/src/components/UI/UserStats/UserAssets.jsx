@@ -12,8 +12,8 @@ const UserAssets = () => {
     })
 
     useEffect(() => {
-        void fetchAssets();
-    }, [])
+        uuid && void fetchAssets();
+    }, [uuid])
 
     return (
         <>
