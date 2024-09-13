@@ -1,15 +1,20 @@
-import React, {useState} from 'react';
+import React from 'react';
 import CreditService from "../../../API/UserRelatedServices/CreditService";
-import {useAuth} from "../../../context/useAuth";
+import {useAuth} from "../../../hooks/context/useAuth";
+import {useInput} from "../../../hooks/useInput";
+import {useFetching} from "../../../hooks/useFetching";
 
 const PayForCreditForm = ({ creditUuid, onSuccess }) => {
     const {uuid} = useAuth();
-    const [amount, setAmount] = useState(null);
+    const amount = useInput(null);
+    const [fetchPayForCredit, isPaymentLoading, responseStatus] = useFetching(async () => {
+        await CreditService.payForCredit(uuid, creditUuid, amount.value);
+    })
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const status = await CreditService.payForCredit(uuid, creditUuid, amount);
-        if (status === 200) {
+        await fetchPayForCredit(uuid, creditUuid, amount.value);
+        if (responseStatus === 200) {
             if (onSuccess) {
                 onSuccess();
             }
@@ -19,7 +24,7 @@ const PayForCreditForm = ({ creditUuid, onSuccess }) => {
     return (
         <form onSubmit={handleSubmit} className={"new__form"}>
             <input type="hidden" value={creditUuid} />
-            <input className={"form__auth__input"} onChange={e => {setAmount(e.target.value)}} value={amount} type={"number"} placeholder={"pay off the loan..."}/>
+            <input className={"form__auth__input"} {...amount} type={"number"} placeholder={"pay off the loan..."}/>
             <button className={"button__submit"}>submit</button>
         </form>
     );

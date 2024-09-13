@@ -1,18 +1,23 @@
-import React, {useState} from 'react';
-import {useAuth} from "../../../context/useAuth";
+import React from 'react';
+import {useAuth} from "../../../hooks/context/useAuth";
 import ConversionService from "../../../API/UserRelatedServices/ConversionService";
-import {useNotifications} from "../../../context/useNotifications";
+import {useNotifications} from "../../../hooks/context/useNotifications";
+import {useInput} from "../../../hooks/useInput";
+import {useFetching} from "../../../hooks/useFetching";
 
 const NewConversionForm = () => {
     const {uuid} = useAuth();
-    const [startingCurrency, setStartingCurrency] = useState('EUR');
-    const [finalCurrency, setFinalCurrency] = useState('');
-    const [amount, setAmount] = useState('');
+    const startingCurrency = useInput('EUR');
+    const finalCurrency= useInput('');
+    const amount = useInput('');
     const { addNotification } = useNotifications();
+    const [fetchConvertedCurrency, isConvertedCurrencyLoading, errorCode] = useFetching(async () => {
+        await ConversionService.convertCurrency(uuid, amount.value, startingCurrency.value, finalCurrency.value);
+    })
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const status = await ConversionService.convertCurrency(uuid, amount, startingCurrency, finalCurrency);
-        if (status === 200) {
+        void await fetchConvertedCurrency();
+        if (errorCode === 200) {
             addNotification(`success`)
         }
     }
@@ -22,18 +27,18 @@ const NewConversionForm = () => {
     return (
         <form className={"new__form"} onSubmit={handleSubmit}>
             From
-            <select onChange={e => setStartingCurrency(e.target.value)} value={startingCurrency}>
+            <select {...startingCurrency}>
                 {currencies.map(currencyCode => (
                     <option key={currencyCode} value={currencyCode}>{currencyCode}</option>
                 ))}
             </select>
             To
-            <select onChange={e => setFinalCurrency(e.target.value)} value={finalCurrency}>
+            <select {...finalCurrency}>
                 {currencies.map(currencyCode => (
                     <option key={currencyCode} value={currencyCode}>{currencyCode}</option>
                 ))}
             </select>
-            <input className={"form__auth__input"} onChange={e => {setAmount(e.target.value)}} value={amount} type={"number"} placeholder={"amount"}/>
+            <input className={"form__auth__input"} {...amount} type={"number"} placeholder={"amount"}/>
             <button className={"button__submit"}>submit</button>
         </form>
     );

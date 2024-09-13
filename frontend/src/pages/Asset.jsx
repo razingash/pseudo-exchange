@@ -12,7 +12,7 @@ const Asset = () => {
         setAsset(response)
     })
     useEffect(() => {
-        fetchAsset();
+        void fetchAsset();
     }, [])
     const assetData = asset && asset.contents
 

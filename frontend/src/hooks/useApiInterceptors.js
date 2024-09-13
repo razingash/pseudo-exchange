@@ -1,6 +1,6 @@
 import axios from "axios";
-import {useAuth} from "../context/useAuth";
 import {useEffect} from "react";
+import {useAuth} from "./context/useAuth";
 
 const apiClient = axios.create({
     baseURL: 'http://127.0.0.1:8000/api/v1',

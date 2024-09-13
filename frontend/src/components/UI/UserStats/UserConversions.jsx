@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {useAuth} from "../../../context/useAuth";
+import {useAuth} from "../../../hooks/context/useAuth";
 import {useFetching} from "../../../hooks/useFetching";
 import ConversionService from "../../../API/UserRelatedServices/ConversionService";
 import {useObserver} from "../../../hooks/useObserver";

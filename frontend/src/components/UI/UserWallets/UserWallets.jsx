@@ -4,7 +4,7 @@ import {useFetching} from "../../../hooks/useFetching";
 import {useApiInterceptors} from "../../../hooks/useApiInterceptors";
 import AccountService from "../../../API/UserRelatedServices/AccountService";
 import NewWalletForm from "../Forms/NewWalletForm";
-import {useAuth} from "../../../context/useAuth";
+import {useAuth} from "../../../hooks/context/useAuth";
 
 
 const UserWallets = ({props}) => {

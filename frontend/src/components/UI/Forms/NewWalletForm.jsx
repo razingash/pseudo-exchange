@@ -1,23 +1,28 @@
-import React, {useState} from 'react';
+import React from 'react';
 import AccountService from "../../../API/UserRelatedServices/AccountService";
-import {useAuth} from "../../../context/useAuth";
-import {useNotifications} from "../../../context/useNotifications";
+import {useAuth} from "../../../hooks/context/useAuth";
+import {useNotifications} from "../../../hooks/context/useNotifications";
+import {useInput} from "../../../hooks/useInput";
+import {useFetching} from "../../../hooks/useFetching";
 
 
 const NewWalletForm = ({ onSuccess  }) => {
     const {uuid} = useAuth();
-    const [currency, setCurrency] = useState('BYN');
+    const currency = useInput('BYN');
     const { addNotification } = useNotifications();
+    const [fetchNewWallet, isNewWalletLoading, errorCode] = useFetching(async () => {
+        await AccountService.createNewWallet(uuid, currency.value);
+    })
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const status = uuid && await AccountService.createNewWallet(uuid, currency);
-        if (status === 200) {
-            addNotification(`Wallet with ${currency} currency successfully created`)
+        uuid && await fetchNewWallet();
+        if (errorCode === 200) {
+            addNotification(`Wallet with ${currency.value} currency successfully created`)
             if (onSuccess) {
                 onSuccess();
             }
-        } else if (status === 400) {
-            addNotification(`bad request: ${status}`);
+        } else if (errorCode === 400) {
+            addNotification(`bad request: ${errorCode}`);
         }
     }
 
@@ -25,7 +30,7 @@ const NewWalletForm = ({ onSuccess  }) => {
 
     return (
         <form className={"new__form"} onSubmit={handleSubmit}>
-            <select onChange={e => setCurrency(e.target.value)} value={currency}>
+            <select {...currency}>
                 {currencies.map(currencyCode => (
                     <option key={currencyCode} value={currencyCode}>{currencyCode}</option>
                 ))}

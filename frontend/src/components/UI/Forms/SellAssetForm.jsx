@@ -1,14 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import {useAuth} from "../../../context/useAuth";
+import {useAuth} from "../../../hooks/context/useAuth";
 import AssetsService from "../../../API/UserRelatedServices/AssetsService";
-import {useNotifications} from "../../../context/useNotifications";
+import {useNotifications} from "../../../hooks/context/useNotifications";
 import {useFetching} from "../../../hooks/useFetching";
+import {useInput} from "../../../hooks/useInput";
 
 const SellAssetForm = () => {
     const {uuid} = useAuth();
-    const [amount, setAmount] = useState('');
-    const [transactionType, setTransactionType] = useState('S');
-    const [currencyType, setCurrencyType] = useState('EUR');
+    const amount = useInput('');
+    const transactionType = useInput('S');
+    const currencyType = useInput('EUR');
     const [ticker, setTicker] = useState('');
     const [tickers, setTickers] = useState([]);
     const { addNotification } = useNotifications();
@@ -17,14 +18,17 @@ const SellAssetForm = () => {
         const response = await AssetsService.getUserAssets(uuid);
         return response.map(asset => asset.ticker)
     })
+    const [fetchAssets, isAssetsLoading, errorCode] = useFetching(async () => { // buy assets
+        await AssetsService.buyAssets(uuid, ticker, transactionType.value, currencyType.value, amount.value);
+    })
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const status = await AssetsService.buyAssets(uuid, ticker, transactionType, currencyType, amount);
-        if (status === 200) {
+        void await fetchAssets();
+        if (errorCode === 200) {
             addNotification(`success`)
         } else {
-            addNotification(`Error ${status}`)
+            addNotification(`Error ${errorCode}`)
         }
     }
 
@@ -44,12 +48,12 @@ const SellAssetForm = () => {
 
     return (
         <form onSubmit={handleSubmit} className={"new__form"}>
-            <select onChange={e => setTransactionType(e.target.value)} value={transactionType}>
+            <select {...transactionType}>
                 {Object.entries(transactionTypes).map(([transaction, type]) => (
                     <option key={transaction} value={type}>{transaction}</option>
                 ))}
             </select>
-            <select onChange={e => setCurrencyType(e.target.value)} value={currencyType}>
+            <select {...currencyType}>
                 {currencies.map(currencyCode => (
                     <option key={currencyCode} value={currencyCode}>{currencyCode}</option>
                 ))}
@@ -59,7 +63,7 @@ const SellAssetForm = () => {
                     <option key={tickerCode} value={tickerCode}>{tickerCode}</option>
                 ))}
             </select>
-            <input className={"form__auth__input"} onChange={e => {setAmount(e.target.value)}} value={amount} type={"number"} placeholder={"number of assets"}/>
+            <input className={"form__auth__input"} {...amount} type={"number"} placeholder={"number of assets"}/>
             <button className={"button__submit"}>submit</button>
         </form>
     );

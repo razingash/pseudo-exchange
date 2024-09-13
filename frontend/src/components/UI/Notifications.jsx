@@ -1,5 +1,5 @@
 import React from 'react';
-import {useNotifications} from "../../context/useNotifications";
+import {useNotifications} from "../../hooks/context/useNotifications";
 import ReactDOM from 'react-dom';
 
 const Notifications = () => {

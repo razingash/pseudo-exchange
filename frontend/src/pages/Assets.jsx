@@ -13,7 +13,7 @@ const Assets = () => {
     });
 
     useEffect(() => {
-        fetchAssets();
+        void fetchAssets();
     }, [])
 
     return (

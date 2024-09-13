@@ -1,36 +1,41 @@
 import React, {useState} from 'react';
 import "./AuthForm.css"
-import {useAuth} from "../../../../context/useAuth";
-import {useNotifications} from "../../../../context/useNotifications";
+import {useAuth} from "../../../../hooks/context/useAuth";
+import {useNotifications} from "../../../../hooks/context/useNotifications";
 import AuthService from "../../../../API/AuthService";
+import {useInput} from "../../../../hooks/useInput";
+import {useFetching} from "../../../../hooks/useFetching";
 
 const AuthForm = ({onClose}) => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const username = useInput('');
+    const password = useInput('');
     const [isNewbie, setIsNewbie] = useState(false);
     const { login } = useAuth();
     const { addNotification } = useNotifications();
+    const [fetchRegisteredUser, isRegisteredUserLoading, regErrorCode] = useFetching(async () => {
+        return await AuthService.register(username.value, password.value);
+    }, 1000);
+    const [fetchLoggedUser] = useFetching(async () => {
+        return await login(username.value, password.value);
+    }, 1000);
+
 
     const registerUser = async (e) => {
         e.preventDefault()
-        try{
-            const data = await AuthService.register(username, password);
-            if (data === 200){
-                addNotification(`User ${username} successfully registered`)
-                await login(username, password); // autologin
-                const userUuid = data.uuid
-                console.log(userUuid)
-            } else if (data === 400) {
-                addNotification(`bad request: ${data}`);
-            }
-        } catch (e) {
-            console.log(e)
+        const data = await fetchRegisteredUser();
+        if (regErrorCode === 200){
+            addNotification(`User ${username.value} successfully registered`)
+            await fetchLoggedUser(); // autologin
+            const userUuid = data.uuid
+            console.log(userUuid)
+        } else if (regErrorCode === 400) {
+            addNotification(`bad request: ${regErrorCode}`);
         }
     }
 
     const loginUser = async (e) => {
         e.preventDefault()
-        const error = await login(username, password);
+        const error = await fetchLoggedUser();
         if (error) {
             addNotification(error)
         }
@@ -48,11 +53,11 @@ const AuthForm = ({onClose}) => {
                     <>
                     <form onSubmit={registerUser} className={"form__auth"}>
                         <div className={"input__field"}>
-                            <input className={"form__auth__input"} onChange={e => {setUsername(e.target.value)}} value={username} type={"text"} placeholder={"username"}/>
+                            <input className={"form__auth__input"} {...username} type={"text"} placeholder={"username"}/>
                             <svg className="svg__icon"><use xlinkHref="#icon_user"></use></svg>
                         </div>
                         <div className={"input__field"}>
-                            <input className={"form__auth__input"} onChange={e => {setPassword(e.target.value)}} value={password} type={"password"} placeholder={"password"}/>
+                            <input className={"form__auth__input"} {...password} type={"password"} placeholder={"password"}/>
                             <svg className="svg__icon"><use xlinkHref="#icon_lock"></use></svg>
                         </div>
                         <button className={"form__auth__submit"}>register</button>
@@ -63,11 +68,11 @@ const AuthForm = ({onClose}) => {
                     <>
                     <form onSubmit={loginUser} className={"form__auth"}>
                         <div className={"input__field"}>
-                            <input className={"form__auth__input"} onChange={e => {setUsername(e.target.value)}} value={username} type={"text"} placeholder={"username"}/>
+                            <input className={"form__auth__input"} {...username} type={"text"} placeholder={"username"}/>
                             <svg className="svg__icon"><use xlinkHref="#icon_user"></use></svg>
                         </div>
                         <div className={"input__field"}>
-                            <input className={"form__auth__input"} onChange={e => {setPassword(e.target.value)}} value={password} type={"password"} placeholder={"password"}/>
+                            <input className={"form__auth__input"} {...password} type={"password"} placeholder={"password"}/>
                             <svg className="svg__icon"><use xlinkHref="#icon_lock"></use></svg>
                         </div>
                         <button className={"form__auth__submit"}>log in</button>

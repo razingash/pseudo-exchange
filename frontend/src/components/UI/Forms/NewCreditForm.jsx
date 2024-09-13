@@ -1,20 +1,25 @@
-import React, {useState} from 'react';
-import {useAuth} from "../../../context/useAuth";
+import React from 'react';
+import {useAuth} from "../../../hooks/context/useAuth";
 import CreditService from "../../../API/UserRelatedServices/CreditService";
+import {useInput} from "../../../hooks/useInput";
+import {useFetching} from "../../../hooks/useFetching";
 
-const NewCreditForm = ({ onSuccess }) => {
+const NewCreditForm = () => {
     const {uuid} = useAuth();
-    const [creditType, setCreditType] = useState('1');
+    const creditType = useInput('1');
+    const [fetchNewCredit] = useFetching(async () => {
+        await CreditService.createNewCredit(uuid, creditType.value);
+    })
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await CreditService.createNewCredit(uuid, creditType);
+        void await fetchNewCredit();
     }
 
     const creditTypes = { "Consumer Loan": "1", "Bail Bond": "2" }
 
     return (
         <form onSubmit={handleSubmit} className={"new__form"}>
-            <select onChange={e => setCreditType(e.target.value)} value={creditType}>
+            <select {...creditType}>
                 {Object.entries(creditTypes).map(([credit, type]) => (
                     <option key={credit} value={type}>{credit}</option>
                 ))}

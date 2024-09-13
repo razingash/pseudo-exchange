@@ -1,20 +1,26 @@
 import React, {useState} from 'react';
-//now it should be used for requests with a large container area because for now it only has an effect for large loads
 
-export const useFetching = (callback) => {
+export const useFetching = (callback, delay=0) => {
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [responseCode, setResponseCode] = useState(200);
+    const [isSpammed, setIsSpammed] = useState(false);
 
-    const fetching = async () => {
+    const fetching = async (...args) => {
+        if (isSpammed) return;
         try {
             setIsLoading(true);
-            return await callback();
+            setIsSpammed(true);
+            return await callback(...args);
         } catch (e) {
-            setError(e.message)
+            console.log(e.message)
+            setResponseCode(e.status)
         } finally {
             setIsLoading(false)
+            setTimeout(() => {
+                setIsSpammed(false);
+            }, delay)
         }
     }
 
-    return [fetching, isLoading, error];
+    return [fetching, isLoading, responseCode];
 };

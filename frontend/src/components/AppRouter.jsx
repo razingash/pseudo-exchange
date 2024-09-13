@@ -1,9 +1,9 @@
 import {Navigate, Route, Routes} from "react-router-dom";
 import {privateRotes, publicRotes} from "../rotes/urls";
-import {useAuth} from "../context/useAuth";
 import {useApiInterceptors} from "../hooks/useApiInterceptors";
 import UserStats from "./UI/UserStats/UserStats";
 import Account from "../pages/Account";
+import {useAuth} from "../hooks/context/useAuth";
 
 const AppRouter = () => {
     useApiInterceptors();

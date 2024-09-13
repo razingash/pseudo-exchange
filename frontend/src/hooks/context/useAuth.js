@@ -1,6 +1,7 @@
 import {createContext, useContext, useEffect, useRef, useState} from "react";
-import AuthService from "../API/AuthService";
-import AccountService from "../API/UserRelatedServices/AccountService";
+import AuthService from "../../API/AuthService";
+import AccountService from "../../API/UserRelatedServices/AccountService";
+import {useFetching} from "../useFetching";
 
 export const AuthContext = createContext(null);
 
@@ -12,21 +13,32 @@ export const AuthProvider = ({ children }) => {
     const [isAuth, setIsAuth] = useState(() => !!localStorage.getItem('token'));
     const [uuid, setUuid] = useState(null);
     const tokensRef = useRef({ access: null, refresh: null });
+    const [fetchUserUuid] = useFetching(async () => {
+        const response = await AccountService.getUserUuid();
+        setUuid(response.uuid)
+    })
+    const [fetchLoginUser, isLoginUserLoading, loginResponseCode] = useFetching(async (username, password) => {
+        return await AuthService.login(username, password);
+    })
+    const [fetchLogoutUser, isLogoutUserLoading, logoutResponseCode] = useFetching(async (token) => {
+        return await AuthService.logout(token);
+    })
+    const [fetchVerifiedToken, isVerifiedTokenLoading, verifiedTokenCode] = useFetching(async (token) => {
+        await AuthService.verifyToken(token);
+    })
+    const [fetchRefreshToken, isTokenRefreshing, refreshTokenCode] = useFetching(async (refreshToken) => {
+        return await AuthService.refreshAccessToken(refreshToken);
+    })
 
     const login = async (username, password) => {
-        try {
-            const data = await AuthService.login(username, password);
-            if (data === 400) {
-                console.log("bad request")
-                return "bad request"
-            }
-            localStorage.setItem('token', data.refresh)
-            tokensRef.current = {access: data.access, refresh: data.refresh};
-            setIsAuth(true);
-
-        } catch (e) {
-            console.log(`Login Error: ${e}`)
+        const data = await fetchLoginUser(username, password);
+        if (loginResponseCode === 400) {
+            console.log("bad request")
+            return "bad request"
         }
+        localStorage.setItem('token', data.refresh)
+        tokensRef.current = {access: data.access, refresh: data.refresh};
+        setIsAuth(true);
     }
 
     const logout = async () => {
@@ -36,7 +48,7 @@ export const AuthProvider = ({ children }) => {
                 setIsAuth(false);
             }
             if (tokensRef.current.refresh) {
-                await AuthService.logout(refreshToken);
+                await fetchLogoutUser(refreshToken);
             }
             localStorage.removeItem('token');
             tokensRef.current = { access: null, refresh: null };
@@ -54,7 +66,7 @@ export const AuthProvider = ({ children }) => {
             if (!refreshToken) {
                 await logout();
             } else if (isValid === true) {
-                const data = await AuthService.refreshAccessToken(refreshToken)
+                const data = await fetchRefreshToken(refreshToken);
                 tokensRef.current = {access: data.access, refresh: data.refresh};
                 setIsAuth(true);
                 return data.access
@@ -68,21 +80,17 @@ export const AuthProvider = ({ children }) => {
     }
 
     const validateRefreshToken = async () => {
-        try {
-            const refreshToken = localStorage.getItem('token')
-            if (refreshToken) {
-                const isTokenValid = await AuthService.verifyToken(refreshToken);
-                if (isTokenValid === 401) {
-                    await logout();
-                    return false
-                }
-                return true
-            } else {
+        const refreshToken = localStorage.getItem('token')
+        if (refreshToken) {
+            void await fetchVerifiedToken(refreshToken);
+            if (verifiedTokenCode === 401) {
                 await logout();
                 return false
             }
-        } catch (e) {
-            console.log(e)
+            return true
+        } else {
+            await logout();
+            return false
         }
     }
 
@@ -93,12 +101,7 @@ export const AuthProvider = ({ children }) => {
                 await refreshAccessToken();
             }
             if (isAuth) {
-                try {
-                    const response = await AccountService.getUserUuid();
-                    setUuid(response.uuid)
-                } catch (e) {
-                    console.log(`Token: ${tokensRef.current.access}\nError: ${e}`)
-                }
+                void await fetchUserUuid();
             }
         }
         void initializeAuth();

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useAuth} from "../../../context/useAuth";
+import {useAuth} from "../../../hooks/context/useAuth";
 import {useFetching} from "../../../hooks/useFetching";
 import AssetsService from "../../../API/UserRelatedServices/AssetsService";
 

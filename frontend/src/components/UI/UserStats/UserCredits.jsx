@@ -1,4 +1,4 @@
-import {useAuth} from "../../../context/useAuth";
+import {useAuth} from "../../../hooks/context/useAuth";
 import React, {useEffect, useRef, useState} from "react";
 import {useFetching} from "../../../hooks/useFetching";
 import CreditService from "../../../API/UserRelatedServices/CreditService";

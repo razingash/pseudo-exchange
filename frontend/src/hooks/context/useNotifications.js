@@ -14,7 +14,7 @@ export const NotificationProvider = ({children}) => {
     const addNotification = (message) => {
         const id = Date.now();
         setNotification(not => [...not, { id, message }]);
-        setTimeout(() => removeNotification(id), 8000);// check for safety
+        setTimeout(() => removeNotification(id), 8000);
     }
 
     const removeNotification = (id) => {
