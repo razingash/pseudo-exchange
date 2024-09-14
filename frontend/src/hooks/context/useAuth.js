@@ -12,21 +12,21 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [isAuth, setIsAuth] = useState(() => !!localStorage.getItem('token'));
     const [uuid, setUuid] = useState(null);
-    const tokensRef = useRef({ access: null, refresh: null });
+    const tokensRef = useRef({ access: null });
     const [fetchUserUuid] = useFetching(async () => {
         const response = await AccountService.getUserUuid();
         setUuid(response.uuid)
     })
-    const [fetchLoginUser, isLoginUserLoading, loginResponseCode] = useFetching(async (username, password) => {
+    const [fetchLoginUser, , loginResponseCode] = useFetching(async (username, password) => {
         return await AuthService.login(username, password);
     })
-    const [fetchLogoutUser, isLogoutUserLoading, logoutResponseCode] = useFetching(async (token) => {
+    const [fetchLogoutUser] = useFetching(async (token) => {
         return await AuthService.logout(token);
     })
-    const [fetchVerifiedToken, isVerifiedTokenLoading, verifiedTokenCode] = useFetching(async (token) => {
+    const [fetchVerifiedToken, , verifiedTokenCode] = useFetching(async (token) => {
         await AuthService.verifyToken(token);
     })
-    const [fetchRefreshToken, isTokenRefreshing, refreshTokenCode] = useFetching(async (refreshToken) => {
+    const [fetchRefreshToken] = useFetching(async (refreshToken) => {
         return await AuthService.refreshAccessToken(refreshToken);
     })
 
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
             return "bad request"
         }
         localStorage.setItem('token', data.refresh)
-        tokensRef.current = {access: data.access, refresh: data.refresh};
+        tokensRef.current.access = data.access;
         setIsAuth(true);
     }
 
@@ -46,12 +46,13 @@ export const AuthProvider = ({ children }) => {
             const refreshToken = localStorage.getItem('token')
             if (!refreshToken) {
                 setIsAuth(false);
+                return;
             }
-            if (tokensRef.current.refresh) {
+            if (refreshToken) {
                 await fetchLogoutUser(refreshToken);
             }
             localStorage.removeItem('token');
-            tokensRef.current = { access: null, refresh: null };
+            tokensRef.current.access = null;
             setIsAuth(false);
             setUuid(null);
         } catch (e) {
@@ -67,7 +68,7 @@ export const AuthProvider = ({ children }) => {
                 await logout();
             } else if (isValid === true) {
                 const data = await fetchRefreshToken(refreshToken);
-                tokensRef.current = {access: data.access, refresh: data.refresh};
+                tokensRef.current.access = data.access;
                 setIsAuth(true);
                 return data.access
             } else {
@@ -105,7 +106,7 @@ export const AuthProvider = ({ children }) => {
             }
         }
         void initializeAuth();
-    }, [isAuth]);
+    }, [isAuth]); // pseudo error -  missing dependencies
 
     return (
         <AuthContext.Provider value={{ isAuth, setIsAuth, tokensRef, uuid,
