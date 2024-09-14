@@ -9,7 +9,7 @@ const NewTransferForm = () => {
     const receiver = useInput('');
     const amount = useInput('');
     const [fetchNewTransfer] = useFetching(async () => {
-        await TransferService.createNewTransfer(uuid, amount, receiver);
+        await TransferService.createNewTransfer(uuid, amount.value, receiver.value);
     })
     const handleSubmit = async (e) => {
         e.preventDefault();

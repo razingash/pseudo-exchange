@@ -13,7 +13,7 @@ from bank.serializers import AccountSerializer, TransferSerializer, CreditSerial
     AccountTransactionsSerializer, AccountAssetsSerializer, AssetsListSerializer, GetUuidSerializer
 from bank.services import get_user_transfers, update_pay_credit_early, get_currencies_rates_json, create_conversion, \
     create_new_wallet, get_account_info, create_new_transaction, get_asset_story, custom_exception, \
-    get_objects_by_uuid, get_objects_list, get_metals_json, get_user_uuid
+    get_objects_by_uuid, get_objects_list, get_metals_json, get_user_uuid, get_account_history
 
 
 class LogoutView(APIView):
@@ -194,13 +194,20 @@ class AccountAssetsApi(APIView):
     def get(self, request, account_uuid):
         page = request.query_params.get('page')
         user_assets, has_next = get_objects_by_uuid(model=AccountAsset, account_uuid=account_uuid, page=page)
-        return Response(AccountAssetsSerializer(user_assets, many=True).data)
+        serializer = AccountAssetsSerializer(user_assets, many=True)
+        return Response({"data": serializer.data, "has_next": has_next})
 
 class AssetStoryApi(APIView):
     @custom_exception
     def get(self, request, asset_ticker):
         asset_story = get_asset_story(asset_ticker)
         return JsonResponse(asset_story)
+
+class AccountHistoryApi(APIView):
+    @custom_exception
+    def get(self, request, account_uuid):
+        account_story = get_account_history(account_uuid)
+        return JsonResponse(account_story)
 
 
 class CurrentRatesApi(APIView): # mb add later new custom permission for limited update

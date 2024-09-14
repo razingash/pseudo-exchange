@@ -31,7 +31,7 @@ const UserCredits = () => {
 
     useEffect(() => {
         uuid && void fetchCredits();
-    }, [uuid])
+    }, [uuid, page])
 
     return (
         <>

@@ -11,6 +11,7 @@ urlpatterns = [
     path('v1/logout/', LogoutView.as_view(), name='logout'),
     path('v1/get-uuid/', GetUserUuidApi.as_view(), name='user_uuid'), # get
     path('v1/account/<str:account_uuid>/', AccountApiView.as_view(), name='account'), # get
+    path('v1/account/<str:account_uuid>/history/', AccountHistoryApi.as_view(), name='account history'), # get
     path('v1/wallets/<str:account_uuid>/', ForeignCurrencyWalletApi.as_view(), name='wallets'), # get | post
     path('v1/transfers/<str:account_uuid>/', TransferApi.as_view(), name='transfer'), # get | post
     path('v1/credits/<str:account_uuid>/', CreditApi.as_view(), name='credit'), # get | post | patch

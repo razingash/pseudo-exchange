@@ -25,7 +25,7 @@ const UserTransfers = () => {
 
     useEffect(() => {
         uuid && void fetchTransfers();
-    }, [uuid]);
+    }, [uuid, page]);
 
     return (
         <>

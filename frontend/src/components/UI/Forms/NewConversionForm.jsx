@@ -11,7 +11,7 @@ const NewConversionForm = () => {
     const finalCurrency= useInput('');
     const amount = useInput('');
     const { addNotification } = useNotifications();
-    const [fetchConvertedCurrency, isConvertedCurrencyLoading, errorCode] = useFetching(async () => {
+    const [fetchConvertedCurrency, , errorCode] = useFetching(async () => {
         await ConversionService.convertCurrency(uuid, amount.value, startingCurrency.value, finalCurrency.value);
     })
     const handleSubmit = async (e) => {

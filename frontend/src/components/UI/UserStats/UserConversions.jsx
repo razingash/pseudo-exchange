@@ -13,6 +13,7 @@ const UserConversions = () => {
     const [fetchConversions, isFetchConversions] = useFetching(async () => {
         const response = await ConversionService.getUserConversions(uuid, page);
         setConversions((prevConversions) => {
+            console.log(response)
             const newConversions = response.data.filter(
                 (conversion) => !prevConversions.some((c) => c.time_stamp === conversion.time_stamp)
             );
@@ -25,7 +26,7 @@ const UserConversions = () => {
 
     useEffect(() => {
         uuid && void fetchConversions();
-    }, [uuid])
+    }, [uuid, page]);
 
     return (
         <>

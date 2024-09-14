@@ -9,6 +9,10 @@ export default class AccountService {
         const response = await apiClient.get(`/account/${userUuid}/`)
         return response.data
     }
+    static async getAccountHistory(userUuid) { // main wallet
+        const response = await apiClient.get(`/account/${userUuid}/history/`)
+        return response.data
+    }
     static async getAdditionalWallets(userUuid) {
         const response = await apiClient.get(`/wallets/${userUuid}/`)
         return response.data

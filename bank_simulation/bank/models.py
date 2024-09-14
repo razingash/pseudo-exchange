@@ -14,6 +14,17 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
+class AccountActions(models.TextChoices):
+    TRANSFERS_R = 'tr', 'transfers receiving'
+    TRANSFERS_S = 'ts', 'transfers sending'
+    CONVERSION_TE = 'cte', 'conversion to euro'
+    CONVERSION_FE = 'cfe', 'conversion from euro'
+    ASSETS_D = 'ad', 'assets dividends' # unused
+    ASSET_P = 'ap', 'asset purchase'
+    ASSET_S = 'as', 'asset selling'
+    CREDITS_TAKING_OUT = 'cto', 'credit taking out'
+    CREDITS_PAYMENT = 'cp', 'credit payment'
+
 class TransactionTypes(models.TextChoices):
     PURCHASE = 'P', 'purchase'
     SALE = 'S', 'sale'
@@ -65,6 +76,10 @@ class AccountAuthInfo(AbstractUser):
     class Meta:
         db_table = 'dt_AccountAuthInfo'
 
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_description(sender, instance, created, **kwargs):
+    if created:
+        Account.objects.create(account_auth_info=instance)
 
 class Account(models.Model):
     class UserStatusChoices(models.TextChoices):
@@ -77,6 +92,8 @@ class Account(models.Model):
     status = models.CharField(max_length=1, choices=UserStatusChoices.choices,
                               default=UserStatusChoices.FREE, verbose_name='account status')
     account_number = models.CharField(max_length=50, unique=True, blank=False, null=False)
+    history = models.FilePathField(blank=True, null=True, path=os.path.join(settings.MEDIA_ROOT, 'assets'),
+                                   allow_files=True, match='.*\.json$')
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -86,15 +103,40 @@ class Account(models.Model):
                 self.account_number = str(latest_acc + 1)
             else:
                 self.account_number = 1_000_000_000_000_000
+            json_path = os.path.join(settings.MEDIA_ROOT, 'accounts', f"{self.account_number}.json")
+            os.makedirs(os.path.dirname(json_path), exist_ok=True)
+            json_schema = {
+                "contents": [{
+                    "action": 'begin',
+                    "balance": 0,
+                    "timestamp": int(time.time())
+                }]
+            }
+
+            with open(json_path, 'w') as json_file:
+                json.dump(json_schema, json_file, indent=2)\
+
+            self.history = json_path
+        else:
+            account_action = kwargs.pop('account_action', None)
+            account_changing = kwargs.pop('account_changing', None)
+            if account_action and account_changing:
+                json_path = os.path.join(settings.MEDIA_ROOT, 'accounts', f"{self.account_number}.json")
+                with open(json_path, 'r') as json_file:
+                    json_data = json.load(json_file)
+
+                json_data["contents"].append({
+                    "action": account_action,
+                    "balance": account_changing,  # amount of gain or loss
+                    "timestamp": int(time.time())
+                })
+                with open(json_path, 'w') as json_file:
+                    json.dump(json_data, json_file, indent=2)
+
         super(Account, self).save(*args, **kwargs)
 
     class Meta:
         db_table = 'dt_Account'
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_user_description(sender, instance, created, **kwargs):
-    if created:
-        Account.objects.create(account_auth_info=instance)
 
 
 class ForeignCurrencyWallet(models.Model):

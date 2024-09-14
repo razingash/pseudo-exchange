@@ -32,13 +32,15 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (username, password) => {
         const data = await fetchLoginUser(username, password);
-        if (loginResponseCode === 400) {
+        console.log(data)
+        if (loginResponseCode === 200) {
+            localStorage.setItem('token', data.refresh)
+            tokensRef.current.access = data.access;
+            setIsAuth(true);
+        } else {
             console.log("bad request")
             return "bad request"
         }
-        localStorage.setItem('token', data.refresh)
-        tokensRef.current.access = data.access;
-        setIsAuth(true);
     }
 
     const logout = async () => {

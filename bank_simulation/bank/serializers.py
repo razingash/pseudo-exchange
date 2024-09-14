@@ -6,7 +6,7 @@ from django.db import IntegrityError
 from rest_framework import serializers
 
 from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, ForeignCurrencyWallet, \
-    AccountAsset, Assets, Currencies, TransactionTypes
+    AccountAsset, Assets, Currencies, TransactionTypes, AccountActions
 from bank.services import get_user_id, check_client_potential, get_user_id_by_account_number
 
 
@@ -70,7 +70,8 @@ class TransferSerializer(serializers.Serializer):
             receiver = Account.objects.get(id=receiver_id)
             sender.balance -= amount
             receiver.balance += amount
-            sender.save(), receiver.save()
+            sender.save(account_action=AccountActions.TRANSFERS_S, account_changing=-amount)
+            receiver.save(account_action=AccountActions.TRANSFERS_R, account_changing=amount)
 
             return transfer
         else:

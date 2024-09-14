@@ -1,4 +1,5 @@
 import json
+import uuid
 from decimal import Decimal
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -10,7 +11,8 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import AccessToken
 
 from bank.models import Account, AccountAuthInfo, Transfer, Credit, Conversion, RateList, ForeignCurrencyWallet, \
-    ConversionRate, InvestmentTransaction, AccountAsset, Assets, UserTransaction, ValuableMetalsList, Metals
+    ConversionRate, InvestmentTransaction, AccountAsset, Assets, UserTransaction, ValuableMetalsList, Metals, \
+    AccountActions
 
 
 class CustomException(Exception):
@@ -43,6 +45,10 @@ def positive_volatility_adjustment(price, base_volatility, threshold):
 
 
 def get_user_id(account_uuid):
+    try:
+        account_uuid = uuid.UUID(str(account_uuid))
+    except (ValueError, TypeError):
+        raise CustomException("invalid uuid")
     try:
         user_id = AccountAuthInfo.objects.only('id').get(uuid=account_uuid).pk
     except ObjectDoesNotExist:
@@ -156,6 +162,17 @@ def get_asset_story(asset_ticker):
             json_data = json.load(json_file)
         return json_data
 
+def get_account_history(sender_uuid):
+    user_id = get_user_id(sender_uuid)
+    try:
+        data_path = Account.objects.only('account_auth_info', 'history').get(account_auth_info_id=user_id).history
+    except ObjectDoesNotExist:
+        raise CustomException('account history not found')
+    else:
+        with open(data_path, 'r') as json_file:
+            json_data = json.load(json_file)
+        return json_data
+
 
 def update_pay_credit_early(sender_uuid, money_for_repayment, credit_uuid):
     sender_id = get_user_id(sender_uuid)
@@ -172,13 +189,13 @@ def update_pay_credit_early(sender_uuid, money_for_repayment, credit_uuid):
                 account.balance -= money_for_repayment
                 credit.to_pay -= money_for_repayment
                 credit.paid_in_total += money_for_repayment
-                account.save(), credit.save()
+                account.save(account_action=AccountActions.CREDITS_TAKING_OUT, account_changing=-money_for_repayment), credit.save()
             elif money_for_repayment >= credit.to_pay:
                 account.balance -= credit.to_pay
                 credit.credit_status = Credit.LoanStatus.CLOSED
                 credit.paid_in_total += credit.to_pay
                 credit.to_pay = 0
-                account.save(), credit.save()
+                account.save(account_action=AccountActions.CREDITS_TAKING_OUT, account_changing=-credit.to_pay), credit.save()
             return credit
     else:
         return client_potential
@@ -214,15 +231,17 @@ def create_conversion(account_uuid, amount, starting_currency, final_currency):
             to_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=final_currency)
             from_wallet.balance -= amount
             received_money = 0.01 * (100 - conversion.conversion_percentage) * amount
-            to_wallet.balance += round(Decimal(received_money), 2)
-            from_wallet.save(), to_wallet.save()
+            converted_money = round(Decimal(received_money), 2)
+            to_wallet.balance += converted_money
+            from_wallet.save(account_action=AccountActions.CONVERSION_FE, account_changing=-int(converted_money)), to_wallet.save()
         elif final_currency == "EUR":
             from_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=starting_currency)
             to_wallet = Account.objects.get(account_auth_info_id=account_id)
             from_wallet.balance -= amount
             received_money = 0.01 * (100 - conversion.conversion_percentage) * amount
-            to_wallet.balance += round(Decimal(received_money), 2)
-            from_wallet.save(), to_wallet.save()
+            converted_money = round(Decimal(received_money), 2)
+            to_wallet.balance += converted_money
+            from_wallet.save(account_action=AccountActions.CONVERSION_TE, account_changing=int(converted_money)), to_wallet.save()
         else:
             from_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=starting_currency)
             to_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=final_currency)
@@ -260,7 +279,7 @@ def create_new_transaction(account_uuid, amount, transaction_type, currency_type
             if currency_type == "EUR":
                 account = Account.objects.get(account_auth_info_id=account_id)
                 account.balance -= client_potential
-                account.save()
+                account.save(account_action=AccountActions.ASSET_P, account_changing=-client_potential)
             else:
                 account = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=currency_type)
                 account.balance -= client_potential
@@ -287,7 +306,7 @@ def create_new_transaction(account_uuid, amount, transaction_type, currency_type
                 if currency_type == "EUR":
                     account = Account.objects.get(account_auth_info_id=account_id)
                     account.balance += cost
-                    account.save()
+                    account.save(account_action=AccountActions.ASSET_S, account_changing=cost)
                 else:
                     account = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=currency_type)
                     account.balance += cost

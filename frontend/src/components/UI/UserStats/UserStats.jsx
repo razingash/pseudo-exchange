@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import Chart from "../Chart/Chart";
 import "./UserStats.css"
 import UserTransfers from "./UserTransfers";
 import UserCredits from "./UserCredits";
@@ -10,13 +9,24 @@ import UserConversions from "./UserConversions";
 import SellAssetForm from "../Forms/SellAssetForm";
 import UserAssets from "./UserAssets";
 import {useNavigate, useParams} from "react-router-dom";
+import {useFetching} from "../../../hooks/useFetching";
+import AccountService from "../../../API/UserRelatedServices/AccountService";
+import {useAuth} from "../../../hooks/context/useAuth";
+import ChartMainWallet from "../Chart/ChartMainWallet";
 
 const UserStats = ({props}) => {
+    const { uuid } = useAuth();
     const { adapter } = useParams();
     const navigate = useNavigate();
     const [selectedAdapter, setSelectedAdapter] = useState(null);
     const [activeForm, setActiveForm] = useState(null);
     const adapterItems = ["transfers", "credits", "conversions", "assets"];
+    const [data, setData] = useState(null);
+    const [fetchUserMainWalletHistory] = useFetching(async (uuid) => {
+        if (!uuid) return;
+        const response = await AccountService.getAccountHistory(uuid);
+        setData(response.contents)
+    })
 
     useEffect(() => {
         const adapterIndex = adapterItems.indexOf(adapter);
@@ -26,6 +36,10 @@ const UserStats = ({props}) => {
             setSelectedAdapter(null);
         }
     }, [adapter]);
+
+    useEffect( () => {
+        uuid && void fetchUserMainWalletHistory(uuid);
+    }, [uuid])
 
     const handleAdapterClick = (index) => {
         setSelectedAdapter(index);
@@ -80,7 +94,7 @@ const UserStats = ({props}) => {
             <div className={"block__statistics"}>
                 <div className={"statistics__params"}></div>
                 <div className={"statistics__field"}>
-                    <Chart/>
+                    <ChartMainWallet data={data}/>
                 </div>
             </div>
             <div className={"block__content"}>
