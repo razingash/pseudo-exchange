@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import './Chart.css';
 import GlobalLoadingEffect from "../LoadingEffects/GlobalLoadingEffect";
 
-const Chart = ({ data }) => {
+const Chart = ({ data, strokeStyle, backgroundStyle, chartType }) => {
     const canvasRef = useRef(null);
     const tooltipRef = useRef(null);
     const padding = 50;
@@ -10,30 +10,68 @@ const Chart = ({ data }) => {
     let minX = Infinity;
     let maxY = -Infinity;
     let minY = Infinity;
+    let generalData;
+    let key = 'cost';
 
-    const processData = () => {
+    const getGeneralData = () => {
+        let balance = 0;
+        return data.map(item => {
+            balance += item.balance;
+            return {
+                timestamp: item.timestamp,
+                balance: balance
+            };
+        })
+    }
+
+    switch (chartType) {
+        case 0: // account chart for balance history
+            key = 'balance';
+            generalData = data && getGeneralData(data);
+            break;
+        default: // default for assets
+            generalData = data;
+            break;
+    }
+    switch (strokeStyle) {
+        case 0:  // account chart for balance history
+            strokeStyle = 'rgba(0,203,13, 1)';
+            break
+        default: // default for assets
+            strokeStyle = 'rgba(0, 200, 180, 1)';
+            break
+    }
+    switch (backgroundStyle) {
+        case 0:  // account chart for balance history
+            backgroundStyle = 'rgba(0,255,21,0.5)';
+            break
+        default: // default for assets
+            backgroundStyle = 'rgba(0,255,224,0.65)';
+            break
+    }
+
+    const processData = (data) => {
         if (!data || data.length === 0) {
             console.error('Data is empty or undefined');
             return;
         }
-
         data.forEach(item => {
-            const cost = item.cost;
-            minY = Math.min(minY, cost);
-            maxY = Math.max(maxY, cost);
+            const number = item[key];
+            minY = Math.min(minY, number);
+            maxY = Math.max(maxY, number);
         });
 
         if (data.length > 0) {
-            minX = data[0].cost;
-            maxX = data[data.length - 1].cost;
+            minX = data[0][key];
+            maxX = data[data.length - 1][key];
         }
-    };
+    }
 
-    const normalize = (value, minY, maxY, height) => {
+    const normalize = (value, minY, maxY, height) => { // function for default chart
         return height - padding - ((value - minY) / (maxY - minY)) * (height - 2 * padding);
     };
 
-    const drawChart = (ctx, canvas) => {
+    const drawChart = (ctx, canvas, data, isMainLine=true) => {
         const width = canvas.clientWidth;
         const height = canvas.clientHeight;
 
@@ -47,36 +85,39 @@ const Chart = ({ data }) => {
 
         ctx.clearRect(0, 0, width, height);
 
-        const gradient = ctx.createLinearGradient(0, 0, 0, height);
-        gradient.addColorStop(0, 'rgba(25,25,31,0.4)');
-        gradient.addColorStop(1, 'rgba(0,255,224,0.65)');
+        const gradient = ctx.createLinearGradient(0, 0, 0, height); // chart data line
+        if (isMainLine) {
+            // data background
+            gradient.addColorStop(0, 'rgba(26,31,25,0.4)');
+            gradient.addColorStop(1, backgroundStyle);
 
-        ctx.strokeStyle = '#444';
-        ctx.lineWidth = 1;
-        ctx.font = '12px Arial';
-        ctx.fillStyle = '#ffffff';
+            // left numbers bar and lines
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 1;
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#ffffff';
+            for (let i = minY; i <= maxY; i += (maxY - minY) / 5) {
+                const y = normalize(i, minY, maxY, height);
 
-        for (let i = minY; i <= maxY; i += (maxY - minY) / 5) {
-            const y = normalize(i, minY, maxY, height);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
 
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(width - padding, y);
-            ctx.stroke();
-
-            ctx.textAlign = 'right';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(i.toFixed(2), padding - 10, y);
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(i.toFixed(2), padding - 10, y);
+            }
         }
 
-        ctx.strokeStyle = 'rgba(0, 200, 180, 1)';
+        ctx.strokeStyle = strokeStyle;
         ctx.lineWidth = 2;
 
         ctx.beginPath();
-        ctx.moveTo(padding, normalize(data[0].cost, minY, maxY, height));
+        ctx.moveTo(padding, normalize(data[0][key], minY, maxY, height));
         for (let i = 1; i < data.length; i++) {
             const x = padding + (i * (width - 2 * padding)) / (data.length - 1);
-            const y = normalize(data[i].cost, minY, maxY, height);
+            const y = normalize(data[i][key], minY, maxY, height);
             ctx.lineTo(x, y);
         }
 
@@ -90,29 +131,37 @@ const Chart = ({ data }) => {
 
     const findClosestPoint = (mouseX, width) => {
         const xStep = (width - 2 * padding) / (data.length - 1);
-        const index = Math.round((mouseX - padding) / xStep);
-        return Math.max(0, Math.min(data.length - 1, index));
+        const rawIndex = (mouseX - padding) / xStep;
+        return Math.max(0, Math.min(data.length - 1, Math.round(rawIndex)));
     };
 
-    const showTooltip = (event) => {
+    const showTooltip = (event, data) => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         const rect = canvas.getBoundingClientRect();
+        const canvasLeft = canvas.offsetLeft;
+        const canvasTop = canvas.offsetTop;
         const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
         const width = canvas.width;
         const height = canvas.height;
 
         const closestIndex = findClosestPoint(mouseX, width);
         const closestX = padding + (closestIndex * (width - 2 * padding)) / (data.length - 1);
-        const closestY = normalize(data[closestIndex].cost, minY, maxY, height);
+        const closestY = normalize(data[closestIndex][key], minY, maxY, height);
 
         const tooltip = tooltipRef.current;
         tooltip.style.display = 'block';
-        tooltip.style.left = `${event.clientX}px`;
-        tooltip.style.top = `${event.clientY - 20}px`;
-        tooltip.textContent = `Cost: ${data[closestIndex].cost.toFixed(2)}`;
+        if (chartType === 0) {
+            tooltip.style.left = `${closestX + canvasLeft + 10}px`;
+            tooltip.style.top = `${mouseY}px`;
+        } else {
+            tooltip.style.left = `${closestX + rect.left + 10}px`;
+            tooltip.style.top = `${mouseY + rect.top}px`;
+        }
+        tooltip.textContent = `${key}: ${data[closestIndex][key].toFixed(2)}`;
 
-        drawChart(ctx, canvas);
+        drawChart(ctx, canvas, data);
 
         ctx.strokeStyle = '#f700ff';
         ctx.lineWidth = 1;
@@ -132,28 +181,35 @@ const Chart = ({ data }) => {
         tooltip.style.display = 'none';
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-        drawChart(ctx, canvas);
+        drawChart(ctx, canvas, generalData);
     };
 
     useEffect(() => {
         if (data && data.length > 0) {
-            processData();
             const canvas = canvasRef.current;
             const ctx = canvas.getContext('2d');
-            drawChart(ctx, canvas);
 
-            canvas.addEventListener('mousemove', showTooltip);
+            processData(generalData);
+            drawChart(ctx, canvas, generalData);
+            console.log(data)
+            console.log(generalData)
+
+            drawChart(ctx, canvas, generalData);
+
+            const handleMouseMove = (e) => showTooltip(e, generalData);
+
+            canvas.addEventListener('mousemove', handleMouseMove);
             canvas.addEventListener('mouseleave', hideTooltip);
 
             return () => {
-                canvas.removeEventListener('mousemove', showTooltip);
+                canvas.removeEventListener('mousemove', handleMouseMove);
                 canvas.removeEventListener('mouseleave', hideTooltip);
             };
         }
     }, [data]);
 
     if (!data) {
-        return (<GlobalLoadingEffect message={"Loading..."}/>)
+        return (<GlobalLoadingEffect />)
     }
 
     return (

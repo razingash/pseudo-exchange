@@ -22,7 +22,6 @@ const Header = () => {
                     <Link to={"/account"} className={"header__item"}>account</Link>
                 }
                 <Link to={"/assets"} className={"header__item"}>assets</Link>
-                <a href={"#"} className={"header__item"}>link 3</a>
             </div>
             {isAuth ? (
                 <div onClick={async () => await logout()} className={"header__auth__field"}>Log out</div>

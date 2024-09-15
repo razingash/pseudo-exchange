@@ -12,7 +12,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useFetching} from "../../../hooks/useFetching";
 import AccountService from "../../../API/UserRelatedServices/AccountService";
 import {useAuth} from "../../../hooks/context/useAuth";
-import ChartMainWallet from "../Chart/ChartMainWallet";
+import Chart from "../Chart/Chart";
 
 const UserStats = ({props}) => {
     const { uuid } = useAuth();
@@ -94,7 +94,7 @@ const UserStats = ({props}) => {
             <div className={"block__statistics"}>
                 <div className={"statistics__params"}></div>
                 <div className={"statistics__field"}>
-                    <ChartMainWallet data={data}/>
+                    <Chart data={data} strokeStyle={0} backgroundStyle={0} chartType={0}/>
                 </div>
             </div>
             <div className={"block__content"}>

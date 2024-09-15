@@ -3,8 +3,9 @@
     justify-content: center;
 }
 .area__chart {
-    width: 1000px;
+    max-width: 1000px;
     height: 500px;
+    aspect-ratio: 2 / 1;
 }
 .chart__canvas {
     background-color: #1b1b1b;

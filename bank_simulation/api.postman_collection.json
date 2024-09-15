@@ -56,7 +56,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNTgwNjgxMiwiaWF0IjoxNzI1ODAzMjEyLCJqdGkiOiJiZTAyNTQ5ZWYzOGE0YmM5YjJhZjIyYmU4ZWU1MTllNCIsInVzZXJfaWQiOjF9.vYwMzPuh4lxF9rExKaQWW32KRBC_IXxMIbxvfSnF_Jw\"\r\n}",
+							"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MzA4NDE4LCJpYXQiOjE3MjYzMDgxMTgsImp0aSI6IjI3Mzc4NGVkMmE1ZDRiYjlhZjJhMzg3ZmZlMTRhYzZjIiwidXNlcl9pZCI6MX0.nikg9dbJMJFy8l1Zf5H457ydxXfuisP0jpZGCxPrb3M\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -129,12 +129,12 @@
 							"formdata": [
 								{
 									"key": "username\n",
-									"value": "postman3",
+									"value": "postman1",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "postman3",
+									"value": "postman1",
 									"type": "text"
 								}
 							]
@@ -166,7 +166,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNTcxNzY3NywiaWF0IjoxNzI1NzE0MDc3LCJqdGkiOiI0MDMzNGVjOWY0MDE0NGNlYThkNTBiNDU0YTQyMzQ4YiIsInVzZXJfaWQiOjN9.PAkoGoiaOV6tkOy72Fxuga7fwfFtjYGfGOkA2bh_9uA",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MzA4NDUyLCJpYXQiOjE3MjYzMDgxNTIsImp0aSI6IjM4MDZjZDc2ZDg4MTQ5OWRiYTUxNGQ2Yjc3NjA0ODAwIiwidXNlcl9pZCI6MX0.O1J1opZqOHf_Uec-i3fm1fxnW0YmLfOLeojt7ud_UTE",
 								"type": "text"
 							}
 						],
@@ -175,7 +175,7 @@
 							"formdata": [
 								{
 									"key": "refresh_token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNTcxNzYwMSwiaWF0IjoxNzI1NzE0MDAxLCJqdGkiOiI0ODQ1YjhjY2U2MjI0NGQ4OTYzNzgxOWU5MDJjY2ZmOCIsInVzZXJfaWQiOjN9.RoVlb0DRFKUXT_ng-mnXFzLnuY8d4b7hwNk73vE3Te0",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNjMxMTc1MiwiaWF0IjoxNzI2MzA4MTUyLCJqdGkiOiJhOGFiNWRhODJmMTg0MzAwYTU4MzVlYjMzMzIzZGM3YiIsInVzZXJfaWQiOjF9.iEPlb1ijY37Ov-WwFiqhU0-vt1A5ksldjlMEcBG-8nw",
 									"type": "text"
 								}
 							]
@@ -366,6 +366,39 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get main wallet history",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MzM5NjczLCJpYXQiOjE3MjYzMzkzNzMsImp0aSI6ImRkMzViNThlNWJiMjRjNGU5MWFhNTQ0MDhiYzI5YzQ1IiwidXNlcl9pZCI6MX0.9waD83P74zF-KU01jlquwiehWdgqQHUWc69sTUYZv30",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/account/95a0fa45758847898703224e798e324b/history/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"account",
+								"95a0fa45758847898703224e798e324b",
+								"history",
+								""
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"description": "info about wallets\n\n- Main in USD\n    \n- Additional"
@@ -383,7 +416,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1MzgyNjE3LCJpYXQiOjE3MjUzODIzMTcsImp0aSI6IjI0MGViYTg0YTQ2NjQ5NjBhMDFhZjVkODE5OTIxNTI1IiwidXNlcl9pZCI6MX0.Toz_Ft3YIoOv4HN6FdnoTIkWDVtM_o9O_Sx2KIUsA3o",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MTYxNTE4LCJpYXQiOjE3MjYxNjEyMTgsImp0aSI6ImU2NWU3NjNiNjQ2YjQ3NWVhOWIyYWQ4ZjZlMTNlYjhlIiwidXNlcl9pZCI6MX0.eFVTacLvqhpMMT2247Propcq5FWF0N9UX_gCw__d5YQ",
 								"type": "text"
 							}
 						],
@@ -397,7 +430,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/v1/transfers/95a0fa45758847898703224e798e324b/",
+							"raw": "http://127.0.0.1:8000/api/v1/transfers/95a0fa45758847898703224e798e324b/?page=3",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -412,6 +445,12 @@
 								"transfers",
 								"95a0fa45758847898703224e798e324b",
 								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "3"
+								}
 							]
 						}
 					},

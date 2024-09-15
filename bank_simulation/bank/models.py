@@ -176,7 +176,7 @@ class Credit(models.Model): # добавить списывание каждый
                 self.daily_growth = 1000
                 account = self.account
                 account.balance += self.amount
-                account.save()
+                account.save(account_action=AccountActions.CREDITS_TAKING_OUT, account_changing=self.amount)
             elif self.credit_type == Credit.LoanType.BAIL_BOND:
                 self.amount = 200000
                 self.to_pay = 200000
@@ -184,7 +184,7 @@ class Credit(models.Model): # добавить списывание каждый
                 self.daily_growth = 1000
                 account = self.account
                 account.balance += self.amount
-                account.save()
+                account.save(account_action=AccountActions.CREDITS_TAKING_OUT, account_changing=self.amount)
             super().clean()
 
     def save(self, *args, **kwargs):

@@ -58,6 +58,14 @@
     gap: 15px;
     padding: 15px;
 }
+.new__form-2 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 5px;
+    justify-content: flex-end;
+    border: 3px solid red;
+}
 .new__form__field__exit, .new__wallet__field__exit {
     display: flex;
     direction: rtl;

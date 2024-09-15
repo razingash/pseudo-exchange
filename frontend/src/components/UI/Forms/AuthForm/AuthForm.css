@@ -48,6 +48,11 @@
     width: 100%;
     font-size: 0.8em;
 }
+.form__auth__input-2 {
+    padding: 6px;
+    font-size: 0.8em;
+    margin-right: 20px;
+}
 .form__auth__input:focus-visible + .svg__icon use {
     fill: var(--selected-item);
 }

@@ -16,9 +16,9 @@ const SellAssetForm = () => {
 
     const [fetchTickers] = useFetching(async () => {
         const response = await AssetsService.getUserAssets(uuid);
-        return response.map(asset => asset.ticker)
+        return response.data.map(asset => asset.ticker)
     })
-    const [fetchAssets, isAssetsLoading, errorCode] = useFetching(async () => { // buy assets
+    const [fetchAssets, , errorCode] = useFetching(async () => { // buy assets
         await AssetsService.buyAssets(uuid, ticker, transactionType.value, currencyType.value, amount.value);
     })
 

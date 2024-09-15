@@ -47,7 +47,7 @@ export const useApiInterceptors = () => {
             apiClient.interceptors.request.eject(interceptorId);
             apiClient.interceptors.response.eject(responseInterceptorId);
         };
-    }, [tokensRef, uuid], refreshAccessToken, logout); //*
+    }, [tokensRef, uuid]);
 };
 
 export default apiClient;
