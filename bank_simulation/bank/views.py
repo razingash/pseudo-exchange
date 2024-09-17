@@ -8,6 +8,7 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from bank.models import ForeignCurrencyWallet, Conversion, InvestmentTransaction, AccountAsset, Credit, Assets
+from bank.permissions import IsValidRequest
 from bank.serializers import AccountSerializer, TransferSerializer, CreditSerializer, ConversionSerializer, \
     ConversionGetSerializer, ForeignCurrencyWalletSerializer, ForeignCurrencyWalletsSerializer, \
     AccountTransactionsSerializer, AccountAssetsSerializer, AssetsListSerializer, GetUuidSerializer
@@ -46,8 +47,8 @@ class GetUserUuidApi(APIView):
         return Response(GetUuidSerializer(uuid, many=False).data)
 
 
-class AccountApiView(APIView):
-    permission_classes = (IsAuthenticated, )
+class AccountApiView(APIView): #
+    permission_classes = (IsAuthenticated, IsValidRequest)
 
     @custom_exception
     def get(self, request, account_uuid):  # get current account info
@@ -56,7 +57,7 @@ class AccountApiView(APIView):
 
 
 class ForeignCurrencyWalletApi(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsValidRequest)
 
     @custom_exception
     def get(self, request, account_uuid): # get another wallets
@@ -74,7 +75,7 @@ class ForeignCurrencyWalletApi(APIView):
 
 
 class TransferApi(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsValidRequest)
 
     @custom_exception
     def get(self, request, account_uuid): # user transfers
@@ -96,7 +97,7 @@ class TransferApi(APIView):
 
 
 class CreditApi(APIView): #mb later change this api to two different - with getting concrete credit and list of credits
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsValidRequest)
 
     @custom_exception
     def get(self, request, account_uuid): # get current credit
@@ -130,7 +131,7 @@ class CreditApi(APIView): #mb later change this api to two different - with gett
 
 
 class ConversionApi(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsValidRequest)
 
     @custom_exception
     def get(self, request, account_uuid): # get conversions
@@ -155,7 +156,7 @@ class ConversionApi(APIView):
 
 
 class TransactionsApi(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsValidRequest)
 
     @custom_exception
     def get(self, request, account_uuid):
@@ -188,7 +189,7 @@ class AssetsListApiView(APIView):
 
 
 class AccountAssetsApi(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsValidRequest)
 
     @custom_exception
     def get(self, request, account_uuid):
@@ -204,6 +205,8 @@ class AssetStoryApi(APIView):
         return JsonResponse(asset_story)
 
 class AccountHistoryApi(APIView):
+    permission_classes = (IsAuthenticated, IsValidRequest)
+
     @custom_exception
     def get(self, request, account_uuid):
         account_story = get_account_history(account_uuid)
