@@ -19,11 +19,7 @@ export default class AuthService {
         return response.data;
     }
     static async logout(token) {
-        try {
-            const response = apiClient.post('/logout/', {refresh_token: token})
-            return response.data;
-        } catch (e) {
-            console.error('critical error: ' + e)
-        }
+        const response = apiClient.post('/logout/', {refresh_token: token})
+        return response.data;
     }
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import "./LoadingEffect.css"
 
 
-const GlobalLoadingEffect = () => {
+const GlobalLoadingEffect = ({message}) => {
     return (
         <div className={"loading__field"}>
             <div className={"loading"}>
@@ -10,7 +10,7 @@ const GlobalLoadingEffect = () => {
                 <div className={"loading__arrow"}></div>
                 <div className={"loading__arrow"}></div>
             </div>
-            <div className={"loading__cell"}><div className={"loading__mark"}>Loading...</div></div>
+            <div className={"loading__cell"}><div className={"loading__mark"}>{message}...</div></div>
         </div>
     );
 };

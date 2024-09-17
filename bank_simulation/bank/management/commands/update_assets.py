@@ -3,7 +3,7 @@ from django.core.management import BaseCommand
 from bank.tasks import update_assets_price
 
 
-class Command(BaseCommand):
+class Command(BaseCommand): # 2
     help = "updates existing assets --n number of times"
 
     def add_arguments(self, parser):

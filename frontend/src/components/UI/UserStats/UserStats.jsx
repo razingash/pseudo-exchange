@@ -13,6 +13,7 @@ import {useFetching} from "../../../hooks/useFetching";
 import AccountService from "../../../API/UserRelatedServices/AccountService";
 import {useAuth} from "../../../hooks/context/useAuth";
 import Chart from "../Chart/Chart";
+import GlobalLoadingEffect from "../LoadingEffects/GlobalLoadingEffect";
 
 const UserStats = ({props}) => {
     const { uuid } = useAuth();
@@ -94,7 +95,11 @@ const UserStats = ({props}) => {
             <div className={"block__statistics"}>
                 <div className={"statistics__params"}></div>
                 <div className={"statistics__field"}>
-                    <Chart data={data} strokeStyle={0} backgroundStyle={0} chartType={0}/>
+                    {data && data.length > 1 ? (
+                        <Chart data={data} strokeStyle={0} backgroundStyle={0} chartType={0}/>
+                    ) : (
+                        <GlobalLoadingEffect message={"Not Enought data"}/>
+                    )}
                 </div>
             </div>
             <div className={"block__content"}>

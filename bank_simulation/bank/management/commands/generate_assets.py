@@ -2,7 +2,7 @@ from django.core.management import BaseCommand
 from bank.models import Assets
 
 
-class Command(BaseCommand):
+class Command(BaseCommand): # 1
     help = "run this command once to generate basic assets"
 
     def handle(self, *args, **options):

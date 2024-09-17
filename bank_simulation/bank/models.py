@@ -106,11 +106,18 @@ class Account(models.Model):
             json_path = os.path.join(settings.MEDIA_ROOT, 'accounts', f"{self.account_number}.json")
             os.makedirs(os.path.dirname(json_path), exist_ok=True)
             json_schema = {
-                "contents": [{
-                    "action": 'begin',
-                    "balance": 0,
-                    "timestamp": int(time.time())
-                }]
+                "contents": [
+                    {
+                        "action": 'begin',
+                        "balance": 0,
+                        "timestamp": int(time.time())
+                    },
+                    {
+                        "action": 'begin',
+                        "balance": self.balance,
+                        "timestamp": int(time.time())
+                    }
+                ]
             }
 
             with open(json_path, 'w') as json_file:

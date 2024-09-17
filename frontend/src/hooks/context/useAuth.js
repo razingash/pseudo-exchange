@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
             setIsAuth(false);
             setUuid(null);
         } catch (e) {
-            console.log("error")
+            console.error(`Logout error: ${e.message}`);
         }
     };
 

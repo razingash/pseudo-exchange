@@ -185,7 +185,7 @@ const Chart = ({ data, strokeStyle, backgroundStyle, chartType }) => {
     };
 
     useEffect(() => {
-        if (data && data.length > 0) {
+        if (generalData && generalData.length > 0) {
             const canvas = canvasRef.current;
             const ctx = canvas.getContext('2d');
 
@@ -206,10 +206,10 @@ const Chart = ({ data, strokeStyle, backgroundStyle, chartType }) => {
                 canvas.removeEventListener('mouseleave', hideTooltip);
             };
         }
-    }, [data]);
+    }, [generalData]);
 
-    if (!data) {
-        return (<GlobalLoadingEffect />)
+    if (!generalData) {
+        return (<GlobalLoadingEffect message={"Loading"}/>)
     }
 
     return (

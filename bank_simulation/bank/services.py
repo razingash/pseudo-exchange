@@ -3,7 +3,7 @@ import uuid
 from decimal import Decimal
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.paginator import Paginator, EmptyPage
+from django.core.paginator import Paginator
 from django.db.models import Q
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
@@ -220,30 +220,36 @@ def create_conversion(account_uuid, amount, starting_currency, final_currency):
             raise CustomException(f"you don't have a wallet with s {starting_currency} currency")
     if final_currency != "EUR":
         if not check_user_wallet(account_id, final_currency):
-            raise CustomException(f"you don't have a wallet with f {final_currency} currency")
+            raise CustomException(f"you don't have a wallet with {final_currency} currency")
+
+    if starting_currency == "EUR":
+        from_wallet = Account.objects.get(account_auth_info_id=account_id)
+    else:
+        from_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=starting_currency)
+    if from_wallet.balance < amount:
+        raise CustomException(f"Insufficient funds in {starting_currency} wallet")
+
     client_potential = check_client_potential(user_id=account_id, amount=amount)
     if client_potential:
         conversion = Conversion.objects.create(account_id=account_id, amount=amount,
                                                starting_currency=starting_currency, final_currency=final_currency)
         ConversionRate.objects.create(exchange_id=rate, conversion=conversion)
+
         if starting_currency == "EUR":
-            from_wallet = Account.objects.get(account_auth_info_id=account_id)
             to_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=final_currency)
             from_wallet.balance -= amount
             received_money = 0.01 * (100 - conversion.conversion_percentage) * amount
             converted_money = round(Decimal(received_money), 2)
             to_wallet.balance += converted_money
-            from_wallet.save(account_action=AccountActions.CONVERSION_FE, account_changing=-int(converted_money)), to_wallet.save()
+            from_wallet.save(account_action=AccountActions.CONVERSION_FE, account_changing=-amount), to_wallet.save()
         elif final_currency == "EUR":
-            from_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=starting_currency)
             to_wallet = Account.objects.get(account_auth_info_id=account_id)
             from_wallet.balance -= amount
             received_money = 0.01 * (100 - conversion.conversion_percentage) * amount
             converted_money = round(Decimal(received_money), 2)
             to_wallet.balance += converted_money
-            from_wallet.save(account_action=AccountActions.CONVERSION_TE, account_changing=int(converted_money)), to_wallet.save()
+            from_wallet.save(), to_wallet.save(account_action=AccountActions.CONVERSION_TE, account_changing=int(converted_money))
         else:
-            from_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=starting_currency)
             to_wallet = ForeignCurrencyWallet.objects.get(account_id=account_id, currency=final_currency)
             from_wallet.balance -= amount
             received_money = 0.01 * (100 - conversion.conversion_percentage) * amount
