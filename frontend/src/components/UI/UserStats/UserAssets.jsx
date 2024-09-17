@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useAuth} from "../../../hooks/context/useAuth";
 import {useFetching} from "../../../hooks/useFetching";
-import AssetsService from "../../../API/UserRelatedServices/AssetsService";
+import UserAssetsService from "../../../API/UserRelatedServices/UserAssetsService";
 import {useObserver} from "../../../hooks/useObserver";
 
 const UserAssets = () => {
@@ -11,7 +11,7 @@ const UserAssets = () => {
     const [hasNext, setHasNext] = useState(false);
     const lastElement = useRef();
     const [fetchAssets, isAssetsLoading] = useFetching(async () => {
-        const response = await AssetsService.getUserAssets(uuid, page);
+        const response = await UserAssetsService.getUserAssets(uuid, page);
         setAssets((prevAssets) => {
             const newAssets = response.data.filter(
                 (asset) => !prevAssets.some((a) => a.ticker === asset.ticker)

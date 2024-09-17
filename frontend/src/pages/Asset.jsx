@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import AssetsService from "../API/AssetsService";
 import {useFetching} from "../hooks/useFetching";
 import {useParams} from "react-router-dom";
 import Chart from "../components/UI/Chart/Chart";
@@ -7,6 +6,8 @@ import "../styles/assets.css"
 import {useAuth} from "../hooks/context/useAuth";
 import {useInput} from "../hooks/useInput";
 import {useNotifications} from "../hooks/context/useNotifications";
+import AssetsService from "../API/AssetsService";
+import UserAssetsService from "../API/UserRelatedServices/UserAssetsService";
 
 const Asset = () => {
     const {uuid, isAuth} = useAuth();
@@ -19,7 +20,7 @@ const Asset = () => {
         setAsset(response)
     })
     const [buyAsset, , errorCode] = useFetching(async (ticker, currencyType) => { // buy assets
-        await AssetsService.buyAssets(uuid, ticker, 'P', currencyType, amount.value);
+        await UserAssetsService.buyAssets(uuid, ticker, 'P', currencyType, amount.value);
     })
 
     const handleSubmit = async (e) => {

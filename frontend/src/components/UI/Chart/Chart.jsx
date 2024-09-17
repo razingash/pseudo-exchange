@@ -1,18 +1,41 @@
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect, useRef} from 'react';
 import './Chart.css';
 import GlobalLoadingEffect from "../LoadingEffects/GlobalLoadingEffect";
 
-const Chart = ({ data, strokeStyle, backgroundStyle, chartType }) => {
+const ChartT = ({ data, strokeStyle, backgroundStyle, chartType }) => {
     const canvasRef = useRef(null);
     const tooltipRef = useRef(null);
     const padding = 50;
+    const lineTypes = {
+        'tr': 'transfers receiving',
+        'ts': 'transfers sending',
+        'cte': 'conversion to euro',
+        'cfe': 'conversion from euro',
+        'ad': 'assets dividends',
+        'ap': 'asset purchase',
+        'as': 'asset selling',
+        'cto': 'credit taking out',
+        'cp': 'credit payment'
+    };
+    const lineColors = {
+        'tr': '#0080ff',
+        'ts': '#ff0000',
+        'cte': '#eeff00',
+        'cfe': '#eeff00',
+        'ad': '#ff00f5',
+        'ap': '#9f4100',
+        'as': '#0f008f',
+        'cto': '#8000ff',
+        'cp': '#0080ff'
+    };
+
     let maxX = -Infinity;
     let minX = Infinity;
     let maxY = -Infinity;
     let minY = Infinity;
     let generalData;
+    let actionData;
     let key = 'cost';
-
     const getGeneralData = () => {
         let balance = 0;
         return data.map(item => {
@@ -23,11 +46,25 @@ const Chart = ({ data, strokeStyle, backgroundStyle, chartType }) => {
             };
         })
     }
+    const splitDataByAction = (data) => {
+        const groupedData = {};
+        data.forEach(item => {
+            const action = item.action;
+
+            if (!groupedData[action]) {
+                groupedData[action] = [];
+            }
+            groupedData[action].push(item);
+        });
+
+        return groupedData;
+    };
 
     switch (chartType) {
         case 0: // account chart for balance history
             key = 'balance';
             generalData = data && getGeneralData(data);
+            actionData = data && splitDataByAction(data);
             break;
         default: // default for assets
             generalData = data;
@@ -129,6 +166,31 @@ const Chart = ({ data, strokeStyle, backgroundStyle, chartType }) => {
         ctx.fill();
     };
 
+    const drawActionLine = (ctx, canvas, actionData, lineKey) => { // drawing additional lines
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+
+        ctx.strokeStyle = lineColors[lineKey];
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        ctx.moveTo(padding, normalize(Math.abs(actionData[0][key]), minY, maxY, height));
+        for (let i = 1; i < actionData.length; i++) {
+            const x = padding + (i * (width - 2 * padding)) / (actionData.length - 1);
+            const y = normalize(Math.abs(actionData[i][key]), minY, maxY, height);
+            ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+    };
+
+    const drawSelectedLines = (ctx, canvas) => {
+        Object.keys(actionData).forEach((lineKey) => {
+            if (actionData[lineKey] && actionData[lineKey].length > 0 && !["begin", "cte", "cfe"].includes(lineKey)) {
+                drawActionLine(ctx, canvas, actionData[lineKey], lineKey);
+            }
+        });
+    }
+
     const findClosestPoint = (mouseX, width) => {
         const xStep = (width - 2 * padding) / (data.length - 1);
         const rawIndex = (mouseX - padding) / xStep;
@@ -160,8 +222,10 @@ const Chart = ({ data, strokeStyle, backgroundStyle, chartType }) => {
             tooltip.style.top = `${mouseY + rect.top}px`;
         }
         tooltip.textContent = `${key}: ${data[closestIndex][key].toFixed(2)}`;
-
         drawChart(ctx, canvas, data);
+        if (chartType === 0) {
+            drawSelectedLines(ctx, canvas);
+        }
 
         ctx.strokeStyle = '#f700ff';
         ctx.lineWidth = 1;
@@ -182,6 +246,9 @@ const Chart = ({ data, strokeStyle, backgroundStyle, chartType }) => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         drawChart(ctx, canvas, generalData);
+        if (chartType === 0) {
+            drawSelectedLines(ctx, canvas);
+        }
     };
 
     useEffect(() => {
@@ -191,10 +258,11 @@ const Chart = ({ data, strokeStyle, backgroundStyle, chartType }) => {
 
             processData(generalData);
             drawChart(ctx, canvas, generalData);
+            if (chartType === 0) {
+                drawSelectedLines(ctx, canvas);
+            }
             console.log(data)
             console.log(generalData)
-
-            drawChart(ctx, canvas, generalData);
 
             const handleMouseMove = (e) => showTooltip(e, generalData);
 
@@ -206,7 +274,7 @@ const Chart = ({ data, strokeStyle, backgroundStyle, chartType }) => {
                 canvas.removeEventListener('mouseleave', hideTooltip);
             };
         }
-    }, [generalData]);
+    }, [data]);
 
     if (!generalData) {
         return (<GlobalLoadingEffect message={"Loading"}/>)
@@ -222,4 +290,4 @@ const Chart = ({ data, strokeStyle, backgroundStyle, chartType }) => {
     );
 };
 
-export default Chart;
+export default ChartT;

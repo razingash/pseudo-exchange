@@ -1,6 +1,6 @@
 import apiClient from "../../hooks/useApiInterceptors";
 
-export default class AssetsService {
+export default class UserAssetsService {
     static async getUserAssets(userUuid, page=1) {
         const response = await apiClient.get(`/user-assets/${userUuid}/`, {params: {page: page}})
         return response.data

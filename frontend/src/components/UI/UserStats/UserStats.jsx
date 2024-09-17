@@ -12,8 +12,8 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useFetching} from "../../../hooks/useFetching";
 import AccountService from "../../../API/UserRelatedServices/AccountService";
 import {useAuth} from "../../../hooks/context/useAuth";
-import Chart from "../Chart/Chart";
 import GlobalLoadingEffect from "../LoadingEffects/GlobalLoadingEffect";
+import Chart from "../Chart/Chart";
 
 const UserStats = ({props}) => {
     const { uuid } = useAuth();

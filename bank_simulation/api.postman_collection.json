@@ -1,0 +1,1011 @@
+{
+	"info": {
+		"_postman_id": "44e650a4-f31e-49eb-8d10-e38c0f1c590c",
+		"name": "api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34255180"
+	},
+	"item": [
+		{
+			"name": "auth/reg",
+			"item": [
+				{
+					"name": "registration",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "postman2",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "postman2\n\n",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/registration/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"registration",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "verify token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MzA4NDE4LCJpYXQiOjE3MjYzMDgxMTgsImp0aSI6IjI3Mzc4NGVkMmE1ZDRiYjlhZjJhMzg3ZmZlMTRhYzZjIiwidXNlcl9pZCI6MX0.nikg9dbJMJFy8l1Zf5H457ydxXfuisP0jpZGCxPrb3M\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/token/verify/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"token",
+								"verify",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNDM2MDQyNiwiaWF0IjoxNzI0Mjc0MDI2LCJqdGkiOiI0ZjY0YzUyNzFhOTY0MDIyOWJiMzZhNmYzZjM1YzFkYyIsInVzZXJfaWQiOjF9.1qw7jHcnpvuxUTGeaLDE2O6AnlcETl7QQi8mzLpa1qY\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/token/refresh/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"token",
+								"refresh",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "log in",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username\n",
+									"value": "postman1",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "postman1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/token/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"token",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2NDgyODEzLCJpYXQiOjE3MjY0ODI3NTMsImp0aSI6IjBkNzExNzZhODVlNTQyNjZiOGMxN2E1MDM2ZTgyOTQyIiwidXNlcl9pZCI6MX0.m-qxl50jm-rTEo6JZhpQKa2VDSnzr0-ZJ_yrtnfQZgk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "refresh_token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNjQ4Mjg3MywiaWF0IjoxNzI2NDgyNzUzLCJqdGkiOiJhMmQ4ZmFlMWY4ZmY0OGNjYmY4NjJiMDQ5NzYzZDA4MSIsInVzZXJfaWQiOjF9.mG7rHy2OeQqXbBAC51DSgBoP3L5sKyvfh27KhAy8oDA",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/logout/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"logout",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get uuid",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1ODAzNjIxLCJpYXQiOjE3MjU4MDMzMjEsImp0aSI6IjJkNWI2NjkwMzM0OTRmN2Q5OTUyM2UxNTg2ZDY1OGUyIiwidXNlcl9pZCI6M30.kRXaE_g1KEcGIeoiIc33Y-voFP4uyYfm-aoQPZkQ7eg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/get-uuid/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"get-uuid",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "in response to authorization (not working now) you will receive a uuid, which you need to save, and you need to use it to access most tables."
+		},
+		{
+			"name": "current account info",
+			"item": [
+				{
+					"name": "account info",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1Mzc0MTQzLCJpYXQiOjE3MjUzNzM4NDMsImp0aSI6IjJlMzRkYTg1YTlkYTQxMGY5YjEyMTk1ZjkxZTVlMjUxIiwidXNlcl9pZCI6MX0.TGnjqd5xu6j6JeH2sXf-DyJkPxyQUKohZCnSinuluhk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/account/ee5aec0d30614ea4ad5c98e49178694b/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"account",
+								"ee5aec0d30614ea4ad5c98e49178694b",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user additional wallets",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1MjA5ODQ2LCJpYXQiOjE3MjUyMDk3ODYsImp0aSI6ImQ5ZWNkYzRhNjExNzQzZTFhNzliMTJjMWJhOThlMzFhIiwidXNlcl9pZCI6MX0.N6ELdtqG85KUY6bRCD4zIONmx8dIOOxkfUPP1GZ8C50",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/wallets/ee5aec0d30614ea4ad5c98e49178694b/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"wallets",
+								"ee5aec0d30614ea4ad5c98e49178694b",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create new wallet",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1NDUxMzE5LCJpYXQiOjE3MjU0NTEwMTksImp0aSI6ImNmNTgzOWVkMWQzYzQ0NzQ5YjllMjc0ZWM3MGJjNWJiIiwidXNlcl9pZCI6MX0.4f1ie3fCAvLKrUOIWdS7V-Y5fHh6f30kTFymN02VIUM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "currency",
+									"value": "CZK",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/wallets/95a0fa45758847898703224e798e324b/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"wallets",
+								"95a0fa45758847898703224e798e324b",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get main wallet history",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MzM5NjczLCJpYXQiOjE3MjYzMzkzNzMsImp0aSI6ImRkMzViNThlNWJiMjRjNGU5MWFhNTQ0MDhiYzI5YzQ1IiwidXNlcl9pZCI6MX0.9waD83P74zF-KU01jlquwiehWdgqQHUWc69sTUYZv30",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/account/95a0fa45758847898703224e798e324b/history/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"account",
+								"95a0fa45758847898703224e798e324b",
+								"history",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "info about wallets\n\n- Main in USD\n    \n- Additional"
+		},
+		{
+			"name": "transfers",
+			"item": [
+				{
+					"name": "user transfers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MTYxNTE4LCJpYXQiOjE3MjYxNjEyMTgsImp0aSI6ImU2NWU3NjNiNjQ2YjQ3NWVhOWIyYWQ4ZjZlMTNlYjhlIiwidXNlcl9pZCI6MX0.eFVTacLvqhpMMT2247Propcq5FWF0N9UX_gCw__d5YQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/transfers/95a0fa45758847898703224e798e324b/?page=3",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"transfers",
+								"95a0fa45758847898703224e798e324b",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create new transfer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDYxOTc0LCJpYXQiOjE3MjYwNjE2NzQsImp0aSI6ImQ0Mjg1NDg2ZjMzMjRjMTQ4NzNhYTExZDU5MTUxNmU2IiwidXNlcl9pZCI6M30.TPmZ0c5rSqCVHXFGO1fNH1bHe49mOpa7qipLQrgfNIk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "amount",
+									"value": "1000",
+									"type": "text"
+								},
+								{
+									"key": "receiver",
+									"value": "1000000000000001",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/transfers/95a0fa45758847898703224e798e324b/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"transfers",
+								"95a0fa45758847898703224e798e324b",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "money transfer between accounts by uuid"
+		},
+		{
+			"name": "credits",
+			"item": [
+				{
+					"name": "user credits",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDY5MTA1LCJpYXQiOjE3MjYwNjg4MDUsImp0aSI6IjNlMDQ4N2YyMWJkODRjOTY5YjBiMzcxODI4ZmM1ODZkIiwidXNlcl9pZCI6M30.g4opBrdTQglcTyrEYasJNhE6m42AKmIpUaksm4amn7c",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/credits/95a0fa45758847898703224e798e324b/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"credits",
+								"95a0fa45758847898703224e798e324b",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create new credit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDUzOTU3LCJpYXQiOjE3MjYwNTM2NTcsImp0aSI6ImQ3MDgzNDUwMzYyMTRlMTQ5MzA5YWRkN2NlOGIzNThhIiwidXNlcl9pZCI6M30.UE7xB0iQZg3TKAigj_gnXpLSxLdFBhgNAVi8oasZZ-o",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"credit_type\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/credits/95a0fa45758847898703224e798e324b/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"credits",
+								"95a0fa45758847898703224e798e324b",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pay for credit",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDYzODEzLCJpYXQiOjE3MjYwNjM1MTMsImp0aSI6IjUxYWM2YzI3ODMzZTQ0ZmI4ZGY5MzNkOGE0ZTRhYjk4IiwidXNlcl9pZCI6M30.pCjiRrGZ9eVNBkJqMTmcomx3mC4uanLKXD7JBAUVTP8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": \"1000\",\r\n    \"credit_uuid\": \"47c4f1874fc745f38422c536afe38fc1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/credits/95a0fa45758847898703224e798e324b/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"credits",
+								"95a0fa45758847898703224e798e324b",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "processing and repayment of loans  \nPost request is a bit crazy  \npatch too - I’ll fix it later"
+		},
+		{
+			"name": "conversions",
+			"item": [
+				{
+					"name": "user conversions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDcwNDY2LCJpYXQiOjE3MjYwNzAxNjYsImp0aSI6IjI5YTBjNmViNTM4ZTQxOTBiZDc3ODJlYWMyNTU4ZjI2IiwidXNlcl9pZCI6M30.B-TNysYaf4nRFapo8BWVDrTKbBYBi3ZLwbCl0wSJbxw",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/conversions/95a0fa45758847898703224e798e324b/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"conversions",
+								"95a0fa45758847898703224e798e324b",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "convert currency",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDczNDc2LCJpYXQiOjE3MjYwNzMxNzYsImp0aSI6Ijk0OTU0OGQ3YjU3YTQyZDk4YzRkNjk0ZTYxMDZmNDQ4IiwidXNlcl9pZCI6M30.ExSL61nhDGJXmqSmscv0j3H1CxOqo7yvBOpYrH9bj8s",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": \"777\",\r\n    \"starting_currency\": \"EUR\",\r\n    \"final_currency\": \"INR\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/conversions/95a0fa45758847898703224e798e324b/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"conversions",
+								"95a0fa45758847898703224e798e324b",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "converting money from one currency to another. Standard currency USD"
+		},
+		{
+			"name": "Assets",
+			"item": [
+				{
+					"name": "assets list",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/assets/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"assets",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user assets",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2NTkyNjQ5LCJpYXQiOjE3MjY1OTIzNDksImp0aSI6Ijk2OWU5Y2RhZGRkMDQ0OTU4OTZhMzljMWJiM2QwNGUyIiwidXNlcl9pZCI6NTF9.anpdIv4Awnl02OIo_ZILILJ0RL2uRSw-tG3-Zf26EQY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/user-assets/95a0fa45758847898703224e798e324b/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"user-assets",
+								"95a0fa45758847898703224e798e324b",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "asset story",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/asset-story/TBMC/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"asset-story",
+								"TBMC",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user assets transactions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDgwOTk0LCJpYXQiOjE3MjYwODA2OTQsImp0aSI6IjQ5ODVkOTU1YzE2NjQ1OTM4YTE5NWI0YTU0OTZkZDZhIiwidXNlcl9pZCI6M30.ZaFjY_YP5KEYFp4MM5bqCKy_MCGcpaWcs-Yx-6HXZhI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/transactions/95a0fa45758847898703224e798e324b/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								"95a0fa45758847898703224e798e324b",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "buy asset",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2NTExNDQ5LCJpYXQiOjE3MjY1MTEzODksImp0aSI6Ijc3ZjY5NThmMTBmZDQ1NjFiMDQzNGQ4MDcxOGU0NzhkIiwidXNlcl9pZCI6NTF9.Zei6VzTzYVBaD0raeg-LzENAG-Vfpa1uF_vPvmadINY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ticker\": \"TBMC\",\r\n    \"transaction_type\": \"P\",\r\n    \"currency_type\": \"EUR\",\r\n    \"amount\": \"10000000000\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/transactions/95a0fa45758847898703224e798e324b/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								"95a0fa45758847898703224e798e324b",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "buying/selling assets that are regulated by the server"
+		},
+		{
+			"name": "external api",
+			"item": [
+				{
+					"name": "get currencies rates",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/rates/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"rates",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get metall rates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/metals/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"metals",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "externally related api. Updates once a day"
+		}
+	]
+}

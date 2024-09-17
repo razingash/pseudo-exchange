@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useAuth} from "../../../hooks/context/useAuth";
-import AssetsService from "../../../API/UserRelatedServices/AssetsService";
+import UserAssetsService from "../../../API/UserRelatedServices/UserAssetsService";
 import {useNotifications} from "../../../hooks/context/useNotifications";
 import {useFetching} from "../../../hooks/useFetching";
 import {useInput} from "../../../hooks/useInput";
@@ -15,11 +15,11 @@ const SellAssetForm = () => {
     const { addNotification } = useNotifications();
 
     const [fetchTickers] = useFetching(async () => {
-        const response = await AssetsService.getUserAssets(uuid);
+        const response = await UserAssetsService.getUserAssets(uuid);
         return response.data.map(asset => asset.ticker)
     })
     const [fetchAssets, , errorCode] = useFetching(async () => { // buy assets
-        await AssetsService.buyAssets(uuid, ticker, transactionType.value, currencyType.value, amount.value);
+        await UserAssetsService.buyAssets(uuid, ticker, transactionType.value, currencyType.value, amount.value);
     })
 
     const handleSubmit = async (e) => {
